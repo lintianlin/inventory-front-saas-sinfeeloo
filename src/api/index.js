@@ -8,6 +8,8 @@ import axios from 'axios'
 // import VueAxios from 'vue-axios'
 import store from '../store'
 import Lockr from 'lockr'
+import api from '@/fetch/api'
+
 axios.defaults.baseURL = baseUrl
 axios.defaults.timeout = 1000 * 15
 axios.defaults.headers.token = store.getters.getToken
@@ -17,44 +19,43 @@ axios.defaults.headers.token = store.getters.getToken
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
 axios.defaults.paramsSerializer = function (params) {
-  return Qs.stringify(params)
+    return Qs.stringify(params)
 }
 axios.defaults.transformRequest = [function (data) {
-  data = Qs.stringify(data)
-  return data
+    data = Qs.stringify(data)
+    return data
 }]
 axios.defaults.transformResponse = [function (data) {
-  let result = JSON.parse(data)
-  // 如果登录失效则跳转到登录
-  if (result.rc !== 0) {
-    // window.location.href = '/#/'
-  }
-  return result
+    let result = JSON.parse(data)
+    // 如果登录失效则跳转到登录
+    if (result.rc !== 0) {
+        // window.location.href = '/#/'
+    }
+    return result
 }]
 
 // 基础地址和静态文件地址
 export {baseUrl, staticUrl}
 
 // 登录
-export function login (username, password) {
-  return new Promise((resolve, reject) => {
-    axios.post('/user/login', {
-        account: username,
-        password: password
-
-    }).then(res => {
-      console.log(res)
-      let token = res.data.data.token
-      console.log(token)
-      console.log(store.getters.getToken)
-      axios.defaults.headers.token = token
-      store.commit('setToken', token)
-      Lockr.set('token', token)
-      resolve(res)
-    }, res => {
-      reject(res)
+export function login(username, password) {
+    return new Promise((resolve, reject) => {
+        axios.post(api.login.login, {
+            account: username,
+            password: password
+        }).then(res => {
+            console.log(res)
+            let token = res.data.data.token
+            console.log(token)
+            console.log(store.getters.getToken)
+            axios.defaults.headers.token = token
+            store.commit('setToken', token)
+            Lockr.set('token', token)
+            resolve(res)
+        }, res => {
+            reject(res)
+        })
     })
-  })
 }
 
 
@@ -64,18 +65,20 @@ export function login (username, password) {
 //   let url = '/realtimetask/getProductLines'
 //   return axios.get(url)
 // }
-// // 获取历史任务列表
-// export function getAllTask (data) {
-//   let url = '/realtimetask/getAllTask'
-//   return axios.get(url, {
-//     params: data
-//   })
-// }
-// // 获取历史任务 添加任务
-// export function addTask (data) {
-//   let url = '/realtimetask/allocating'
-//   return axios.post(url, data)
-// }
+// 获取历史任务列表
+export function getAllTask(data) {
+    let url = '/realtimetask/getAllTask'
+    return axios.get(url, {
+        params: data
+    })
+}
+
+// 获取历史任务 添加任务
+export function addTask(data) {
+    let url = '/realtimetask/allocating'
+    return axios.post(url, data)
+}
+
 // // 获取历史任务 删除任务
 // export function deleteTask (data) {
 //   let url = '/realtimetask/deleteTask'

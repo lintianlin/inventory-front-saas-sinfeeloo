@@ -18,6 +18,10 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
+    data: {
+        // 空的实例放到根组件下，所有的子组件都能调用
+        Bus: new Vue()
+    },
     router,
     store,
     template: '<App/>',

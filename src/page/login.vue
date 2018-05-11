@@ -29,6 +29,13 @@
           <i></i>
           <p><span>*</span>用户名或密码错误！</p>
         </div> -->
+        <el-alert class="loginAlert"
+                  v-if="elAlertShow"
+                  :title="elAlertTitle"
+                  :type="elAlertType"
+                  :closable="false"
+                  show-icon>
+        </el-alert>
       </div>
     </div>
   </div>
@@ -85,8 +92,9 @@
             if (200 === response.data.rc) {
               localStorage.token = response.data.data.token;
               localStorage.userId = response.data.data.id;
-              localStorage.account = response.data.data.name
-              console.log(response.data.data.id)
+              localStorage.account = response.data.data.account;
+              console.log("登录id："+response.data.data.id);
+              console.log("登录账户："+response.data.data.account);
               self.$router.push({path: '/home'})
             } else {
               self.controlElAlert(response.data.des, 'error');

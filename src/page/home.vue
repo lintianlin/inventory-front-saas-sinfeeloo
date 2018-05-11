@@ -5,34 +5,46 @@
         <img src="../assets/images/logo.png">
         <h2>华森进销存系统</h2>
         <div class="top_right">
-          <!--<img src="../assets/images/head.png">-->
-          <!--<span>admin</span>-->
-          <!--<p>-->
-          <!--<img src="../assets/images/edit.png">-->
-          <!--<span>退出</span>-->
-          <!--</p>-->
-          <ul class="main-menu">
-            <li class="top_right">
-              <img src="../assets/images/head.png" alt="">
-              <i class="eliconfont elicon-touxiang"></i>
-              <span>{{userName}}</span>
-            </li>
-            <li title="退出">
-              <el-popover
-                ref="popover"
-                placement="bottom"
-                width="160"
-                popper-class="logoutPop"
-                v-model="visible2">
-                <p>确定要退出系统吗？</p>
-                <div style="text-align: right; margin: 0">
-                  <el-button size="mini" type="text" @click="visible2 = false">取消</el-button>
-                  <el-button type="primary" size="mini" @click="loginOut">确定</el-button>
-                </div>
-              </el-popover>
-              <i class="eliconfont elicon-power" v-popover:popover @click="logoutClick"></i>
-            </li>
-          </ul>
+          <img src="../assets/images/head.png">
+          <span>{{userName}}</span>
+          <p>
+          <img src="../assets/images/edit.png">
+          <span class="eliconfont elicon-power" v-popover:popover @click="logoutClick">退出</span>
+          </p>
+          <el-popover
+            ref="popover"
+            placement="bottom"
+            width="160"
+            popper-class="logoutPop"
+            v-model="visible2">
+            <p>确定要退出系统吗？</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini" type="text" @click="visible2 = false">取消</el-button>
+              <el-button type="primary" size="mini" @click="loginOut">确定</el-button>
+            </div>
+          </el-popover>
+          <!--<ul class="main-menu">-->
+            <!--<li class="top_right">-->
+              <!--<img src="../assets/images/head.png" alt="">-->
+              <!--<i class="eliconfont elicon-touxiang"></i>-->
+              <!--<span>{{userName}}</span>-->
+            <!--</li>-->
+            <!--<li title="退出">-->
+              <!--<el-popover-->
+                <!--ref="popover"-->
+                <!--placement="bottom"-->
+                <!--width="160"-->
+                <!--popper-class="logoutPop"-->
+                <!--v-model="visible2">-->
+                <!--<p>确定要退出系统吗？</p>-->
+                <!--<div style="text-align: right; margin: 0">-->
+                  <!--<el-button size="mini" type="text" @click="visible2 = false">取消</el-button>-->
+                  <!--<el-button type="primary" size="mini" @click="loginOut">确定</el-button>-->
+                <!--</div>-->
+              <!--</el-popover>-->
+              <!--<i class="eliconfont elicon-power" v-popover:popover @click="logoutClick"></i>-->
+            <!--</li>-->
+          <!--</ul>-->
         </div>
       </el-header>
       <el-container id='content'>
@@ -74,7 +86,7 @@
   export default {
     data() {
       return {
-        userName:localStorage.account,
+        userName: localStorage.account,
         imgSrc: require('../assets/images/menu_left2.png'),
         oneMenu: [],
         visible2: false,
@@ -85,7 +97,9 @@
     },
     mounted() {
       var self = this;
-      console.log("初始化-mounted");
+
+      self.userName = localStorage.account;
+      console.log("初始化-mounted"+localStorage.account);
       document.getElementById('content').style.minHeight = this.screenHeight - 60 + 'px';
       var currentNavParam = localStorage.navParam;//读取缓存中左侧导航
       console.log("缓存中的导航" + currentNavParam);
@@ -170,31 +184,32 @@
             }
           })
       },
+      loginOut() {//登出
+        this.visible2 = false;
+        let params = {}
+        http.axiosPost(api.login.logout, params,
+          response => {
+            if (response.data.rc === 200) {
+              localStorage.userId = '';
+              localStorage.account = '';
+              localStorage.token = '';
+              localStorage.clear();
+              this.$router.push({path: '/login'})
+            } else {
+              //
+            }
+          })
+      },
+      logoutClick() {
+        setTimeout(() => {
+          $(".logoutPop").css({'z-index': '4000'})
+        }, 100)
+      }
     },
     beforeDestroy() {
       this.$root.Bus.$off('navChange')//监听顶部导航点击事件--非父子组件传值--销毁
-    },
-    loginOut() {//登出
-      this.visible2 = false;
-      let params = {}
-      http.axiosPost(api.login.logout, params,
-        response => {
-          if (response.data.rc === 200) {
-            localStorage.userId = '';
-            localStorage.account = '';
-            localStorage.token = '';
-            localStorage.clear();
-            this.$router.push({path: '/login'})
-          } else {
-            //
-          }
-        })
-    },
-    logoutClick() {
-      setTimeout(() => {
-        $(".logoutPop").css({'z-index': '4000'})
-      }, 100)
     }
+
 
   }
 </script>

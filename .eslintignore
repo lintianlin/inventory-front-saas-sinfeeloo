@@ -3,3 +3,5 @@
 /dist/
 /*.js
 /test/unit/coverage/
+/src/page/login.vue
+/src/page/home.vue

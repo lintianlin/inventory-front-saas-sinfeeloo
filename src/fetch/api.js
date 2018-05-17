@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 2017/9/15 0015.
  */
-var picURL = 'http://192.168.30.47:8010/'
+var picURL = 'http://192.168.30.47:8087/'
 export default {
   login: {
     login: '/user/login', // 登录
@@ -14,6 +14,9 @@ export default {
     deleteGoods: 'goods/deleteGoods', // 删除商品
     getGoodsDetail: 'goods/getGoodsDetail' // 获得商品详情
   },
+  param: {
+    getParamListByPage: 'param/getParamListByPage' // 获取参数列表
+  },
   user: {// 用户管理
     modifyPassword: 'user/modifyPassword'// 修改密码
   },
@@ -23,11 +26,7 @@ export default {
   alyunPicUrl: 'http://sinfeeloo.oss-cn-beijing.aliyuncs.com/images/saas/', // 阿里云图片地址
   pic: {// 图片上传
     baseUrl: picURL,
-    logodeal: picURL + 'system/company/logodeal', // 公司Logo
-    companyphoto: picURL + 'system/companyphoto/deal', // 公司相册批量上传
-    customerImagedeal: picURL + 'system/customer/imagedeal', // 客户图片上传
-    brandLogo: picURL + 'goods/goodsBrand/uploadLogo', // 客户图片上传
-    uploadPhoto: picURL + 'common/image/uploadToTemp', // 图片统一上传-临时文件
+    uploadPhoto: picURL + 'image/upload', // 图片统一上传
     deletePhoto: 'system/companyphoto/delete'// 图片删除
   }
 }

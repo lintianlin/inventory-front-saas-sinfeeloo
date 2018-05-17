@@ -6,8 +6,7 @@
         <div class="section-content">
           <div class="el-table-diy filterQuery">
             <el-row class="table-header">
-              <el-col :span="16" class="header-title"></el-col>
-              <el-col :span="8" class="pointer text-r">
+              <el-col :span="24" class="pointer text-r">
                 <el-button type="text" class="btn-text" @click="refreshData()">重置</el-button>
                 <el-button type="primary" class="btn-normal self-btn-blue" @click="getData()">查询
                 </el-button>
@@ -22,10 +21,25 @@
                       <el-input v-model="formInline.goodsName" placeholder="商品名称"
                                 size="small"></el-input>
                     </el-form-item>
-                    <el-form-item label="输入搜索：">
+                    <el-form-item label="商品编号：">
                       <el-input v-model="formInline.goodsCode" placeholder="商品编号"
                                 size="small"></el-input>
                     </el-form-item>
+
+                    <el-form-item label="品类：">
+                      <el-select class="self-select" filterable v-model="formInline.typeId"
+                                 placeholder="全部" size="small"
+                                 @change="getData()">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option
+                          v-for="item in goodsTypeArr"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id">
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+
                     <el-form-item label="商品品牌：">
                       <el-select class="self-select" filterable v-model="formInline.brandId"
                                  placeholder="全部" size="small"
@@ -33,27 +47,12 @@
                         <el-option label="全部" value="全部"></el-option>
                         <el-option
                           v-for="item in brandArr"
-                          :key="item.brandCode"
-                          :label="item.brandName"
-                          :value="item.brandCode">
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id">
                         </el-option>
                       </el-select>
                     </el-form-item>
-                    <!--<el-form-item label="商品品类：" class="control-primary">-->
-                    <!--<goodtypeSelectCom-->
-                    <!--:selectVal="true"-->
-                    <!--:goodtypeVal="formInline.typeId"-->
-                    <!--v-on:goodtypeSelectChange="getSelectValue"-->
-                    <!--&gt;</goodtypeSelectCom>-->
-                    <!--</el-form-item>-->
-                    <!--<el-form-item label="商品状态：">-->
-                    <!--<el-select filterable v-model="formInline.status" placeholder="全部"-->
-                    <!--size="small"-->
-                    <!--class="selectType self-select" @change="getData()">-->
-                    <!--<el-option label="已上架" value="1"></el-option>-->
-                    <!--<el-option label="未上架" value="0"></el-option>-->
-                    <!--</el-select>-->
-                    <!--</el-form-item>-->
                   </el-form>
                 </div>
               </el-collapse-transition>
@@ -63,14 +62,12 @@
           <div class="el-table-diy box-content" style="margin-top:0 ">
             <el-row class="box-content-header">
               <el-col :span="24" class="text-r">
-                <el-button type="primary" class="btn-normal self-btn-blue" @click="importGoods" v-if="premiss.addHas">
+                <el-button type="primary" class="btn-normal self-btn-blue" @click="importGoods" >
                   添加
                 </el-button>
                 <el-button type="primary" class="btn-normal self-btn-green" @click="exportOut()" style="margin-left:0;"
-                           v-if="premiss.exportHas">导出
+                           >导出
                 </el-button>
-                <el-button type="primary settingBtn" style="margin-left:0px" @click="settingCol"><i
-                  class="eliconfont elicon-shezhilie"></i></el-button>
               </el-col>
             </el-row>
             <el-row>
@@ -86,7 +83,9 @@
                     min-width="120">
                     <template slot-scope="scope">
                       <img v-if="scope.row.pictureUrl"
-                           :src="'http://192.168.30.47:8010'+scope.row.pictureUrl+'?x-oss-process=image/resize,m_fill,h_50,w_50'"
+                           height="70"
+                           width="70"
+                           :src="'http://192.168.30.47:8087'+scope.row.pictureUrl+'?x-oss-process=image/resize,m_fill,h_50,w_50'"
                            alt="logo">
                     </template>
                   </el-table-column>
@@ -135,23 +134,23 @@
                 </div>
                 <div v-for="(item,i) in testCol" v-if="item.name=='goodsType'">
                   <el-table-column
-                    prop="type"
+                    prop="typeName"
                     v-if="item.name='goodsType'"
                     label="类别"
                     min-width="200">
                     <template slot-scope="scope">
-                      <span class="text-grey"> {{ scope.row.type }}</span>
+                      <span class="text-grey"> {{ scope.row.typeName }}</span>
                     </template>
                   </el-table-column>
                 </div>
                 <div v-for="(item,i) in testCol" v-if="item.name=='goodsBrand'">
                   <el-table-column
-                    prop="brand"
+                    prop="brandName"
                     v-if="item.name='goodsBrand'"
                     label="品牌"
                     min-width="120">
                     <template slot-scope="scope">
-                      <span class="text-grey"> {{ scope.row.brand }}</span>
+                      <span class="text-grey"> {{ scope.row.brandName }}</span>
                     </template>
                   </el-table-column>
                 </div>
@@ -168,25 +167,25 @@
                 </div>
                 <div v-for="(item,i) in testCol" v-if="item.name=='goodsBuyPrice'">
                   <el-table-column
-                    prop="bugPrice"
+                    prop="buyprice"
                     v-if="item.name='goodsBuyPrice'"
                     label="进货价格"
                     min-width="100"
                   >
                     <template slot-scope="scope">
-                      <span class="text-grey"> {{ scope.row.bugPrice?scope.row.bugPrice:'0.00' }}</span>
+                      <span class="text-grey"> {{ scope.row.buyprice?scope.row.buyprice:'0.00' }}</span>
                     </template>
                   </el-table-column>
                 </div>
                 <div v-for="(item,i) in testCol" v-if="item.name=='goodsSalesPrice'">
                   <el-table-column
-                    prop="salePrice"
+                    prop="saleprice"
                     v-if="item.name='goodsSalesPrice'"
                     label="销售价格"
                     min-width="100"
                   >
                     <template slot-scope="scope">
-                      <span class="text-grey"> {{ scope.row.salePrice ? scope.row.salePrice : 0}}</span>
+                      <span class="text-grey"> {{ scope.row.saleprice ? scope.row.saleprice : '0.00'}}</span>
                     </template>
                   </el-table-column>
                 </div>
@@ -221,13 +220,11 @@
                     <el-button
                       type="text"
                       class="text-theme"
-                      v-if="premiss.editHas"
                       @click="formEdit(scope.row.id)">编辑
                     </el-button>
                     <el-button
                       type="text"
                       class="text-theme"
-                      v-if="premiss.detailHas"
                       @click="formView(scope.row.id)">查看
                     </el-button>
                   </template>
@@ -305,12 +302,12 @@
         totalPage2: 0,//总条数
         providerArr: [],
         brandArr: [],//商品品牌下拉框
-        brandArr2: [],//商品品牌下拉框
+        goodsTypeArr: [],//商品品类下拉框
         formInline: {
           goodsName: '',
           goodsCode: '',
-          goodsType: [],
-          brand: '',
+          typeId: '',
+          brandId: '',
           color: '',
           standard: '',
           material: ''
@@ -392,7 +389,8 @@
     },
     mounted() {
       this.getData();
-      // this.getBrand();
+      this.getBrand();
+      this.getGoodsType();
       // this.getProvider();
       var sh = tools.getWindowSize('h') - 468;
       $(".box-content .el-table").css({'min-height': sh + 'px'})
@@ -418,9 +416,8 @@
           limit: this.pageSize,
           goodsName: this.formInline.goodsName,
           goodsCode: this.formInline.goodsCode,//商品编码
-          goodsType: this.formInline.goodsType,//品类
-          brand: this.formInline.brand == '全部' ? '' : this.formInline.brand,//品牌
-          color: this.formInline.color,//颜色
+          typeId: this.formInline.typeId== '全部' ? '' : this.formInline.typeId, // 品类
+          brandId: this.formInline.brandId == '全部' ? '' : this.formInline.brandId, // 品牌
           standard: this.formInline.standard,//规格
           material: this.formInline.material,//材质
         }
@@ -432,16 +429,16 @@
               self.tableData = response.data.data.list;
               self.totalPage = response.data.data.total;
 
-              response.data.data.list.forEach(item => {
-                item.saleAmount = item.saleAmount ? item.saleAmount : 0
-                item.averageCost = item.averageCost ? item.averageCost : 0
-                item.salesVolume = item.salesVolume ? item.salesVolume : 0
-                if (item.saleAmount == 0) {
-                  item.amount = 0;
-                } else {
-                  item.amount = parseFloat((item.saleAmount - item.averageCost * item.salesVolume) / item.saleAmount).toFixed(4)
-                }
-              })
+              // response.data.data.list.forEach(item => {
+              //   item.saleAmount = item.saleAmount ? item.saleAmount : 0
+              //   item.averageCost = item.averageCost ? item.averageCost : 0
+              //   item.salesVolume = item.salesVolume ? item.salesVolume : 0
+              //   if (item.saleAmount == 0) {
+              //     item.amount = 0;
+              //   } else {
+              //     item.amount = parseFloat((item.saleAmount - item.averageCost * item.salesVolume) / item.saleAmount).toFixed(4)
+              //   }
+              // })
 
             } else {
               self.controlElAlert('获取数据失败', 'error');
@@ -548,15 +545,21 @@
       getBrand() {//获取品牌信息
         var self = this;
         let params = {
-          companyId: localStorage.companyID
+          typeName: '品牌'
         }
-        http.axiosGet(api.brand.listbycom, params,
+        http.axiosGet(api.param.getParamListByPage, params,
           response => {
-            self.brandArr = response.data.result;
+            self.brandArr = response.data.data.list;
           })
-        http.axiosGet(api.brand.list, params,
+      },
+      getGoodsType() {//获取品类信息
+        var self = this;
+        let params = {
+          typeName: '品类'
+        }
+        http.axiosGet(api.param.getParamListByPage, params,
           response => {
-            self.brandArr2 = response.data.result;
+            self.goodsTypeArr = response.data.data.list;
           })
       },
       getProvider() {//获取供货商信息

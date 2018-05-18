@@ -23,28 +23,6 @@
               <el-button type="primary" size="mini" @click="loginOut">确定</el-button>
             </div>
           </el-popover>
-          <!--<ul class="main-menu">-->
-            <!--<li class="top_right">-->
-              <!--<img src="../assets/images/head.png" alt="">-->
-              <!--<i class="eliconfont elicon-touxiang"></i>-->
-              <!--<span>{{userName}}</span>-->
-            <!--</li>-->
-            <!--<li title="退出">-->
-              <!--<el-popover-->
-                <!--ref="popover"-->
-                <!--placement="bottom"-->
-                <!--width="160"-->
-                <!--popper-class="logoutPop"-->
-                <!--v-model="visible2">-->
-                <!--<p>确定要退出系统吗？</p>-->
-                <!--<div style="text-align: right; margin: 0">-->
-                  <!--<el-button size="mini" type="text" @click="visible2 = false">取消</el-button>-->
-                  <!--<el-button type="primary" size="mini" @click="loginOut">确定</el-button>-->
-                <!--</div>-->
-              <!--</el-popover>-->
-              <!--<i class="eliconfont elicon-power" v-popover:popover @click="logoutClick"></i>-->
-            <!--</li>-->
-          <!--</ul>-->
         </div>
       </el-header>
       <el-container id='content'>
@@ -54,9 +32,6 @@
               class="el-menu-vertical" @open="handleOpen" @close="handleClose" :router=true>
               <el-submenu :index="one.id.toString()" :key="one.id" v-for="one in oneMenu">
                 <template slot="title">
-                  <!--<img :src="require(one.icon)">-->
-                  <!--<img :src="imgSrc">-->
-                  <!--<img src="/static/menu/menu_left2.png">-->
                   <img v-bind:src="one.icon"/>
                   <span>{{one.name}}</span>
                 </template>

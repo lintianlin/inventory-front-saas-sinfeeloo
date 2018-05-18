@@ -136,6 +136,7 @@
 <script>
   import api from '@/fetch/api'
   import tools from '@/fetch/tools'
+  import http from '@/fetch/http'
 
   export default {
     components: {

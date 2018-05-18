@@ -62,12 +62,12 @@
           <div class="el-table-diy box-content" style="margin-top:0 ">
             <el-row class="box-content-header">
               <el-col :span="24" class="text-r">
-                <el-button type="primary" class="btn-normal self-btn-blue" @click="importGoods" >
+                <el-button type="primary" class="btn-normal self-btn-blue" @click="formAdd()" >
                   添加
                 </el-button>
-                <el-button type="primary" class="btn-normal self-btn-green" @click="exportOut()" style="margin-left:0;"
-                           >导出
-                </el-button>
+                <!--<el-button type="primary" class="btn-normal self-btn-green" @click="exportOut()" style="margin-left:0;"-->
+                           <!--&gt;导出-->
+                <!--</el-button>-->
               </el-col>
             </el-row>
             <el-row>
@@ -428,69 +428,10 @@
             if (response.data.rc==200) {
               self.tableData = response.data.data.list;
               self.totalPage = response.data.data.total;
-
-              // response.data.data.list.forEach(item => {
-              //   item.saleAmount = item.saleAmount ? item.saleAmount : 0
-              //   item.averageCost = item.averageCost ? item.averageCost : 0
-              //   item.salesVolume = item.salesVolume ? item.salesVolume : 0
-              //   if (item.saleAmount == 0) {
-              //     item.amount = 0;
-              //   } else {
-              //     item.amount = parseFloat((item.saleAmount - item.averageCost * item.salesVolume) / item.saleAmount).toFixed(4)
-              //   }
-              // })
-
             } else {
               self.controlElAlert('获取数据失败', 'error');
             }
           })
-      },
-      // exportOut() {//导出
-      //   var self = this;
-      //   var sortCodeStr = 'id';//排序字段
-      //   var sortRoleStr = 'desc';//排序方式
-      //   if (self.valueSort.indexOf(',') > -1) {
-      //     sortCodeStr = self.valueSort.split(',')[0];
-      //     sortRoleStr = self.valueSort.split(',')[1];
-      //   }
-      //   let params = {
-      //     companyId: localStorage.companyID,
-      //     page: this.pageIdx,
-      //     limit: this.pageSize,
-      //     content: this.formInline.goodsName,
-      //     typeCode: this.formInline.typeId,
-      //     brandCode: this.formInline.brandId == '全部' ? '' : this.formInline.brandId,
-      //     status: this.formInline.status,
-      //     sortCode: sortCodeStr,
-      //     sortRole: sortRoleStr
-      //   }
-      //   http.exportExcel(api.goodsInfo.goodsExportExcel, params)
-      // },
-      // getDataDialog() {//获取导入商品
-      //   var self = this;
-      //   let params = {
-      //     isManage: 1,
-      //     companyId: localStorage.companyID,
-      //     page: this.pageIdx2,
-      //     limit: this.pageSize2,
-      //     content: this.formInline2.goodsName,
-      //     typeCode: this.formInline2.typeId,
-      //     brandCode: this.formInline2.brandId == '全部' ? '' : this.formInline2.brandId,
-      //
-      //   }
-      //   http.axiosGet(api.goodsInfo.selectAllExcept, params,
-      //     response => {
-      //       self.loading = false;
-      //       if (response.data.success) {
-      //         self.dialogTableData = response.data.result.data;
-      //         self.totalPage2 = response.data.result.total;
-      //       } else {
-      //         self.controlElAlert('获取数据失败', 'error');
-      //       }
-      //     });
-      // },
-      settingCol() {//设置列
-        this.dialogVisible2 = true;
       },
 
       handleSelectionChange(val) {//获取选中的
@@ -513,35 +454,6 @@
                this.ruleForm4.amount=0;
            }*/
       },
-      // submitFormDialog() {//添加导入商品
-      //   var self = this;
-      //   var goodsIds = '';
-      //   self.$refs.goodsTable.selection.forEach((out) => {
-      //     goodsIds = goodsIds + out.id + ",";
-      //   })
-      //   if (goodsIds == '') {
-      //     this.$message({
-      //       message: '请选择需要添加的商品',
-      //       type: 'warning'
-      //     });
-      //     return false;
-      //   }
-      //   if (!this.hasClick) {
-      //     this.hasClick = true
-      //     http.axiosPost(api.goodsInfo.goodsAdd, {goodsStr: goodsIds},
-      //       response => {
-      //         if (response.data.success) {
-      //           self.controlElAlert('添加商品成功', 'success');
-      //           self.dialogImportGoods = false;
-      //           this.getData();
-      //         } else {
-      //           self.controlElAlert('添加商品失败', 'warning');
-      //         }
-      //       });
-      //   }
-      //
-      //
-      // },
       getBrand() {//获取品牌信息
         var self = this;
         let params = {
@@ -562,21 +474,10 @@
             self.goodsTypeArr = response.data.data.list;
           })
       },
-      getProvider() {//获取供货商信息
-        var self = this;
-        let params = {
-          companyId: localStorage.companyID
-        }
-        http.axiosGet(api.supplier.list, params,
-          response => {
-            self.providerArr = response.data.result;
-          })
-      },
-      importGoods() {//导入商品
-        this.dialogImportGoods = true;
-        this.hasClick = false;
-        this.formInline2.typeId = '';
-        this.getDataDialog();
+
+      formAdd(){
+        this.setParamsLocalStorage()
+        this.$router.push({path: '/basicinfo/addGoods'})
       },
       formSearch() {//高级检索
         this.dialogVisible = true;

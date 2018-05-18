@@ -336,22 +336,6 @@
           response => {
             if (response.data.success) {
               var resData = response.data.result;
-
-              goodsName: self.ruleForm.goodsName,
-                goodsCode: self.ruleForm.goodsCode,
-                typeId: self.ruleForm.typeId,
-                brandId: self.ruleForm.brandId,
-                unit: self.ruleForm.unit,
-                color: self.ruleForm.color,
-                standard: self.ruleForm.standard,
-                material: self.ruleForm.material,
-                buyPrice: self.ruleForm.buyPrice,
-                sellPrice: self.ruleForm.sellPrice,
-                desc: self.ruleForm.desc,
-                picture: self.ruleForm.picture,
-                updater: localStorage.userId
-
-
               self.ruleForm.goodsName = resData.name;
               self.ruleForm.goodsCode = resData.address;
               self.ruleForm.typeId = resData.latitude;

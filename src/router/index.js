@@ -37,6 +37,11 @@ var routes = [
         component: resolve => require(['@/page/basicinfo/param'], resolve)
       }, // 参数管理
       {
+        path: '/basicinfo/addGoods',
+        meta: {requireAuth: true, showCopyRight: true},
+        component: resolve => require(['@/page/basicinfo/addGoods'], resolve)
+      }, // 添加商品
+      {
         path: '/purchase/purchaseOrder',
         meta: {requireAuth: true, showCopyRight: true},
         component: resolve => require(['@/page/purchase/purchaseOrder'], resolve)
@@ -95,7 +100,8 @@ var routes = [
         path: '/system/user',
         meta: {requireAuth: true, showCopyRight: true},
         component: resolve => require(['@/page/system/user'], resolve)
-      }// 员工管理
+      } // 员工管理
+
     ]
   }
 ]

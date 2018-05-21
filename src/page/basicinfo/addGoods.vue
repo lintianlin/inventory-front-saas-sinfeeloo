@@ -355,7 +355,6 @@
               self.controlElAlert('请求数据失败，刷新重试', 'warning');
             }
           });
-
       },
       controlElAlert(text, type) {//控制提示框
         var self = this;

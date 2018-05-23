@@ -5,11 +5,12 @@
 import axios from 'axios'
 import utils from './utils'
 import $ from 'jquery'
+import api from '@/fetch/api'
 
 export default {
 
   // get请求
-  axiosGet (url, params, callback, errorCallback) {
+  axiosGet(url, params, callback, errorCallback) {
     var newParams = utils.get_data(params)
     var data = ''
     $.each(newParams, function (name, value) {
@@ -28,7 +29,7 @@ export default {
   },
 
   // post请求
-  axiosPost (url, params, callback, errorCallback) {
+  axiosPost(url, params, callback, errorCallback) {
     axios({
       url: url,
       method: 'post',
@@ -49,7 +50,7 @@ export default {
   },
 
   // 导出excel
-  exportExcel (url, params) {
+  exportExcel(url, params) {
     var newParams = utils.get_data(params)
     var data = ''
     $.each(newParams, function (name, value) {
@@ -59,6 +60,17 @@ export default {
     data = data + '&token=' + localStorage.verifyToken
     var urls = data ? (url + '?' + data) : url
     window.location.href = axios.defaults.baseURL + urls
+  },
+  getGoodsType(callback) {//获取商品类别，商品类别下拉框
+    let params = {
+      typeName: '品类'
+    }
+    this.axiosGet(api.param.getParamListByPage, params, callback);
+  },
+  getBrand(callback) {//获取品牌信息
+    let params = {
+      typeName: '品牌'
+    }
+    this.axiosGet(api.param.getParamListByPage, params, callback);
   }
-
 }

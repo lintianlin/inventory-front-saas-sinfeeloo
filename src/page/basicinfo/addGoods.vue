@@ -99,12 +99,13 @@
               <el-form-item label="商品图片：" prop="picture">
                 <el-upload
                   class="avatar-uploader align-left"
+                  :headers="headers"
                   :action="upFileUrl"
                   :data="upfileParam"
                   :show-file-list="false"
                   :on-success="handleAvatarSuccess"
                   :before-upload="beforeAvatarUpload">
-                  <img v-if="ruleForm.picture" :src="ruleForm.picture" class="avatar">
+                  <img v-if="ruleForm.picture" :src="'http://192.168.30.47:8087'+ruleForm.picture" class="avatar">
                   <i class="el-icon-plus avatar-uploader-icon" v-else></i>
                   <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，文件不能超过500kb</div>
                 </el-upload>
@@ -139,9 +140,7 @@
   import http from '@/fetch/http'
 
   export default {
-    components: {
-
-    },
+    components: {},
     data() {
       var checkName = (rule, value, callback) => {
         var self = this;
@@ -168,10 +167,12 @@
         addEdit: '',
         cid: this.$route.query.cid,
         mapDialogIsShow: false,//地图弹框
-        centerPosition: [119.117, 36.710],//打开地图中心点
         isShowSearchPositioin: true,//是否显示地图的搜索框
         upFileUrl: api.pic.uploadPhoto,//客户图片上传 URL
-        upfileParam: {id: localStorage.companyID},
+        headers: {
+          token: localStorage.token
+        },//token
+        upfileParam: {},
         ruleForm: {
           goodsName: '',
           goodsCode: '',
@@ -185,7 +186,8 @@
           sellPrice: '',
           desc: '',
           picture: '',
-          updater: '',
+          pictureId: 0,
+          updater: ''
         },
         editData: '',
         rules: {
@@ -211,11 +213,10 @@
     mounted() {
       var script = document.createElement('script')
       script.type = 'text/javascript'
-      script.src = 'http://webapi.amap.com/maps?v=1.4.0&key=5ed8865f5c083dad30ef1d50e7a91c86&plugin=AMap.MouseTool,AMap.PolyEditor,AMap.DistrictSearch,AMap.MarkerClusterer,AMap.Autocomplete,AMap.PlaceSearch'   // 高德地图
       document.body.appendChild(script)
       this.getSelect();//获取下拉框
-      if (this.$route.query.cid != null) {
-        this.getCustomerInfo();
+      if (this.$route.query.goodsid != null) {
+        this.getGoodsInfo();
         this.addEdit = '编辑';
       } else {
         this.addEdit = '添加';
@@ -226,7 +227,7 @@
         var self = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            if (this.$route.query.cid != null) {
+            if (this.$route.query.goodsid != null) {
               self.updateData();
             } else {
               self.submitData();
@@ -239,8 +240,11 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      handleAvatarSuccess(file) {//图片上传成功回调
-        this.ruleForm.dialogImageUrl = file.result;
+      handleAvatarSuccess(res, file) {//图片上传成功回调
+        console.log("@@@" + this.outputObj(file))
+        console.log("@@@" + this.outputObj(res))
+        this.ruleForm.picture = res.data.filePath;
+        this.ruleForm.pictureId = res.data.id;
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -269,15 +273,14 @@
           buyPrice: self.ruleForm.buyPrice,
           sellPrice: self.ruleForm.sellPrice,
           desc: self.ruleForm.desc,
-          picture: self.ruleForm.picture,
+          picture: self.ruleForm.pictureId,
           updater: localStorage.userId
         }
         params = tools.fifterNull(params);
-        tools.axiosPost(api.customer.customer_save, params,
+        http.axiosPost(api.goods.addGoods, params,
           response => {
-            if (response.data.success) {
+            if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
-//                            self.$router.push({path: '/main/system/customer'});
               self.$router.back();
             } else {
               self.controlElAlert(response.data.error, 'warning');
@@ -287,7 +290,7 @@
       updateData() { //提交编辑数据
         var self = this;
         let params = {
-          id: self.$route.query.cid,
+          id: self.$route.query.goodsid,
           goodsName: self.ruleForm.goodsName,
           goodsCode: self.ruleForm.goodsCode,
           typeId: self.ruleForm.typeId,
@@ -299,15 +302,14 @@
           buyPrice: self.ruleForm.buyPrice,
           sellPrice: self.ruleForm.sellPrice,
           desc: self.ruleForm.desc,
-          picture: self.ruleForm.picture,
+          picture: self.ruleForm.pictureId,
           updater: localStorage.userId
         }
         params = tools.fifterNull(params);
-        tools.axiosPost(api.customer.customer_save, params,
+        http.axiosPost(api.goods.modifyGoods, params,
           response => {
-            if (response.data.success) {
+            if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
-//                            self.$router.push({path: '/main/system/customer'});
               self.$router.back();
             } else {
               self.controlElAlert('操作失败，请重新提交', 'warning');
@@ -316,40 +318,38 @@
       },
       getSelect() {//获取页面所需下拉框
         var self = this;
-        tools.getPriceSysArr(//获取客户渠道
+        http.getGoodsType(//获取品类
           response => {
-            self.goodsTypeArr = response.data.result;
+            self.goodsTypeArr = response.data.data.list;
           }
         )
-        tools.getLineArr(//获取线路
+        http.getBrand(//获取品牌
           response => {
-            self.linesArr = response.data.result;
+            self.goodsBrandArr = response.data.data.list;
           }
         )
       },
-      getCustomerInfo() {//根据id获取数据
+      getGoodsInfo() {//根据id获取商品数据
         var self = this;
         var params = {
-          id: self.$route.query.cid
+          id: self.$route.query.goodsid
         }
-        tools.axiosGet(api.customer.get, params,
+        http.axiosGet(api.goods.getGoodsDetail, params,
           response => {
-            if (response.data.success) {
-              var resData = response.data.result;
+            if (response.data.rc === 200) {
+              var resData = response.data.data;
               self.ruleForm.goodsName = resData.name;
-              self.ruleForm.goodsCode = resData.address;
-              self.ruleForm.typeId = resData.latitude;
-              self.ruleForm.brandId = resData.longitude;
-              self.ruleForm.unit = resData.licenses;
-              self.ruleForm.color = resData.pricingStructure;
-              self.ruleForm.standard = resData.cosLinkman;
-              self.ruleForm.material = resData.cosLinkphone;
-              self.ruleForm.buyPrice = resData.visitlineId;
-              self.ruleForm.sellPrice = resData.cosPhoto;//
-              self.ruleForm.desc = resData.remindDate;//
-              self.ruleForm.picture = resData.remindMoney;//
-              self.ruleForm.remindUsable = resData.remindUsable;//
-              self.ruleForm.updater = resData.province;//
+              self.ruleForm.goodsCode = resData.code;
+              self.ruleForm.typeId = resData.typeid;
+              self.ruleForm.brandId = resData.brandid;
+              self.ruleForm.unit = resData.unit;
+              self.ruleForm.color = resData.color;
+              self.ruleForm.standard = resData.standard;
+              self.ruleForm.material = resData.material;
+              self.ruleForm.buyPrice = resData.buyprice;
+              self.ruleForm.sellPrice = resData.saleprice;//
+              self.ruleForm.desc = resData.descs;//
+              self.ruleForm.picture = resData.picture;//
               self.editData = resData;
             } else {
               self.controlElAlert('请求数据失败，刷新重试', 'warning');
@@ -366,8 +366,14 @@
         }, 2000)
       },
       goBack() {
-//	            this.$router.go(-1);
         this.$router.back();
+      },
+      outputObj(obj) {
+        var description = "";
+        for (var i in obj) {
+          description += i + " = " + obj[i] + "\n";
+        }
+        return description
       }
     }
   }

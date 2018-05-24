@@ -26,11 +26,11 @@
         </div>
       </el-header>
       <el-container id='content'>
-        <el-aside width="200px">
+        <el-aside class="text-l" width="200px">
           <el-row class="tac">
             <el-menu
               class="el-menu-vertical" @open="handleOpen" @close="handleClose" :router=true>
-              <el-submenu :index="one.id.toString()" :key="one.id" v-for="one in oneMenu">
+              <el-submenu :index="one.id.toString()" :key="one.id" v-for="one in oneMenu" >
                 <template slot="title">
                   <img v-bind:src="one.icon"/>
                   <span>{{one.name}}</span>
@@ -212,9 +212,6 @@
     background: #fff;
   }
 
-  .el-aside {
-    background: #fff;
-  }
 
   .el-footer {
     background-color: #ffffff;

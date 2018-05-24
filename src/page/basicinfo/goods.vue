@@ -80,12 +80,13 @@
                     prop="pictureUrl"
                     v-if="item.name=='goodsPic'"
                     label="商品主图"
-                    min-width="120">
+                    min-width="80">
                     <template slot-scope="scope">
                       <img v-if="scope.row.pictureUrl"
                            height="70"
                            width="70"
                            :src="'http://192.168.30.47:8087'+scope.row.pictureUrl+'?x-oss-process=image/resize,m_fill,h_50,w_50'"
+                           @click="showPhoto(scope.row.pictureUrl)"
                            alt="logo">
                     </template>
                   </el-table-column>
@@ -100,7 +101,7 @@
                   <el-table-column
                     prop="No"
                     label="序号"
-                    width="70"
+                    width="60"
                   >
                     <template slot-scope="scope">
                       <span class="text-grey"> {{ scope.$index + 1 }}</span>
@@ -125,7 +126,7 @@
                     prop="code"
                     v-if="item.name='goodsCode'"
                     label="商品编码"
-                    min-width="120"
+                    min-width="60"
                   >
                     <template slot-scope="scope">
                       <span class="text-grey"> {{ scope.row.code }}</span>
@@ -137,7 +138,7 @@
                     prop="typeName"
                     v-if="item.name='goodsType'"
                     label="类别"
-                    min-width="200">
+                    min-width="80">
                     <template slot-scope="scope">
                       <span class="text-grey"> {{ scope.row.typeName }}</span>
                     </template>
@@ -148,7 +149,7 @@
                     prop="brandName"
                     v-if="item.name='goodsBrand'"
                     label="品牌"
-                    min-width="120">
+                    min-width="80">
                     <template slot-scope="scope">
                       <span class="text-grey"> {{ scope.row.brandName }}</span>
                     </template>
@@ -159,7 +160,7 @@
                     prop="standard"
                     v-if="item.name='goodsBrand'"
                     label="规格"
-                    min-width="120">
+                    min-width="80">
                     <template slot-scope="scope">
                       <span class="text-grey"> {{ scope.row.standard }}</span>
                     </template>
@@ -170,7 +171,7 @@
                     prop="buyprice"
                     v-if="item.name='goodsBuyPrice'"
                     label="进货价格"
-                    min-width="100"
+                    min-width="80"
                   >
                     <template slot-scope="scope">
                       <span class="text-grey"> {{ scope.row.buyprice?scope.row.buyprice:'0.00' }}</span>
@@ -182,7 +183,7 @@
                     prop="saleprice"
                     v-if="item.name='goodsSalesPrice'"
                     label="销售价格"
-                    min-width="100"
+                    min-width="80"
                   >
                     <template slot-scope="scope">
                       <span class="text-grey"> {{ scope.row.saleprice ? scope.row.saleprice : '0.00'}}</span>
@@ -194,7 +195,7 @@
                     prop="descs"
                     v-if="item.name='goodsDesc'"
                     label="商品描述"
-                    min-width="100"
+                    min-width="120"
                   >
                     <template slot-scope="scope">
                       <span class="text-grey"> {{ scope.row.descs }}</span>
@@ -215,7 +216,7 @@
                   fixed="right"
                   prop="address"
                   label="操作"
-                  width="120">
+                  width="150">
                   <template slot-scope="scope">
                     <el-button
                       type="text"
@@ -226,6 +227,11 @@
                       type="text"
                       class="text-theme"
                       @click="formView(scope.row.id)">查看
+                    </el-button>
+                    <el-button
+                      type="text"
+                      class="text-theme"
+                      @click="formDelete(scope.row.id)">删除
                     </el-button>
                   </template>
                 </el-table-column>
@@ -250,6 +256,11 @@
           </div>
         </div>
       </section>
+      <el-dialog title="图片预览" :visible.sync="dialogFormVisible" size="small">
+        <div style="overflow: auto">
+          <img :src="showUrl" alt="">
+        </div>
+      </el-dialog>
       <el-alert class="topAlert"
                 v-if="elAlertShow"
                 :title="elAlertTitle"
@@ -267,37 +278,19 @@
   import tools from '@/fetch/tools'
 
   export default {
-    components: {
-      // 'goodtypeSelect': goodtypeSelect,
-      // 'goodtypeSelectCom': goodtypeSelectCom
-    },
+    components: {},
     data() {
       return {
         typeArr: [], // 商品类型下拉框
-        props: {
-          value: 'id',
-          label: 'name',
-          children: 'list'
-        },
         tableData: [],
-        optionsPage: ['10', '20', '50', '100'], // 每页显示多少条
-        optionsSort: [
-          {label: '按名称排序', value: 'goods_name,desc'},
-          {label: '按编码排序', value: 'goods_code,desc'},
-          {label: '按品牌排序', value: 'brand_id,desc'},
-          {label: '按分类排序', value: 'type_id,desc'},
-          {label: '默认排序', value: 'id,desc'}
-        ], // 排序方式
         valuePage: '', // 显示条数model
         valueSort: '', // 排序方式model
         pageIdx: 1, // 当前页
         pageSize: 20,
         totalPage: 0, // 总条数
-
         pageIdx2: 1, // 当前页
         pageSize2: 20,
         totalPage2: 0, // 总条数
-        providerArr: [],
         brandArr: [], // 商品品牌下拉框
         goodsTypeArr: [], // 商品品类下拉框
         formInline: {
@@ -314,13 +307,6 @@
           typeId: [],
           brandId: ''
         },
-        goodsNameNew: '',
-        goodsBrandId: '',
-        goodTypeId: '',
-        supplierArr: [],
-        dialogTableData: [], //
-        provider: '',
-        statusnew: '',
         multipleSelection: [], // 选中的值
         optionsLot: [ // 批量操作
           {label: '商品上架', value: '1'},
@@ -337,6 +323,8 @@
         dialogVisible2: false, // 表头设置
         dialogTitle: '高级检索',
         dialogImportGoods: false, // 导入商品
+        dialogFormVisible: false,//查看图片
+        showUrl: '',
         ruleForm: {
           name: '',
           description: ''
@@ -351,10 +339,6 @@
         rules: {},
         sels: [],
         status: '',
-        optionsTab: 0,
-        amountAll: 0,
-        amountOn: 0,
-        amountOff: 0,
         premiss: { // 页面显示权限
           addHas: false,
           editHas: false,
@@ -382,7 +366,6 @@
     mounted() {
       this.getData()
       this.getSelectValue()
-      // this.getProvider();
       var sh = tools.getWindowSize('h') - 468
       $(".box-content .el-table").css({'min-height': sh + 'px'})
     },
@@ -433,7 +416,7 @@
       },
       formAdd() {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/basicinfo/addGoods'})
+        this.$router.push({path: '/basicinfo/addGoods?isview=0'})
       },
       formSearch() { // 高级检索
         this.dialogVisible = true
@@ -445,6 +428,26 @@
       formEdit(id) {
         this.setParamsLocalStorage()
         this.$router.push({path: '/basicinfo/addGoods?goodsid=' + id + '&isview=0'})
+      },
+      formDelete(id) {//删除
+        var self = this;
+        let params = {
+          id: id,
+        }
+        this.showCancelMessage(
+          () => {
+            http.axiosPost(api.goods.deleteGoods, params,
+              response => {
+                if (response.data.rc === 200) {
+                  self.controlElAlert('删除成功', 'success');
+                  self.getData();
+                } else {
+                  self.controlElAlert('删除失败', 'warning');
+                }
+              });
+          }
+        )
+
       },
       setParamsLocalStorage() { // 查询条件存入缓存
         var pageParam = {
@@ -507,115 +510,6 @@
         this.formInline.status = '';
         this.getData();
       },
-      batchDeal() {
-        var self = this;
-        if (this.valueLot == null || this.valueLot == "") {
-          this.controlElAlert('请选择批量处理操作', 'success');
-          return;
-        }
-
-        var ids = this.sels.map(item => item.id).join()
-        if (ids == null || ids == "") {
-          this.controlElAlert('请选择批量处理记录', 'success');
-          return;
-        }
-
-        var status = 1;
-        if (this.valueLot == 2) {
-          status = 0;
-        }
-        let params = {
-          ids: ids,
-          status: status
-        }
-        http.axiosPost(api.goodsInfo.changeStatusBatch, params,
-          response => {
-            if (response.data.success) {
-              if (status == 1) {
-                self.controlElAlert('启用成功', 'success');
-                this.getData();
-              } else {
-                self.controlElAlert('关闭成功', 'success');
-                this.getData();
-              }
-            } else {
-              if (status == 1) {
-                self.controlElAlert('启用失败', 'warning');
-              } else {
-                self.controlElAlert('关闭失败', 'warning');
-              }
-            }
-          });
-      },
-      changeStatus(id, val) {//改变是否启用的状态
-        var self = this;
-        let params = {
-          id: id,
-          status: val
-        }
-        http.axiosPost(api.goodsInfo.changeStatusSH, params,
-          response => {
-            if (response.data.success) {
-              if (val == '1') {
-                self.controlElAlert('启用成功', 'success');
-              } else {
-                self.controlElAlert('关闭成功', 'success');
-              }
-            } else {
-              if (val == '1') {
-                self.controlElAlert('启用失败', 'warning');
-              } else {
-                self.controlElAlert('关闭失败', 'warning');
-              }
-            }
-          });
-      },
-      deleteData(id) {//删除
-        var self = this;
-        let params = {
-          id: id
-        }
-        this.showCancelMessage(
-          () => {
-            http.axiosPost(api.goodsInfo.delete, params,
-              response => {
-                if (response.data.success) {
-                  self.controlElAlert('删除成功', 'success');
-                  self.getData();
-                } else {
-                  self.controlElAlert('删除失败', 'warning');
-                }
-              });
-          }
-        );
-
-      },
-      protectData(id, num) {
-        var self = this;
-        let params = {
-          id: id,
-          protectLock: num
-        }
-        http.axiosPost(api.goodsInfo.changeProtectLock, params,
-          response => {
-            if (response.data.success) {
-              self.controlElAlert('锁定成功', 'success');
-              self.getData();
-            } else {
-              self.controlElAlert('锁定失败', 'success');
-            }
-          });
-      },
-      getBrandList() { //获取商品品牌下拉框
-        var self = this;
-        let params = {
-          companyId: localStorage.companyID
-        }
-        http.axiosGet(api.brand.list, params,
-          response => {
-            self.brandNamepArr = response.data.result;
-          });
-      },
       resetForm(formName) {
         this.dialogVisible = false;
 
@@ -631,7 +525,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(callback).catch(() => {
-
+          console.log("删除失败！")
         });
       },
       controlElAlert(text, type) {//控制提示框
@@ -643,61 +537,13 @@
           self.elAlertShow = false;
         }, 2000)
       },
-      changePackup() {//收起折叠搜索面板
-        this.packupSearch = !this.packupSearch;
-      },
       selsChange(sels) {
         this.sels = sels
       },
-      delGroup() {
-        var ids = this.sels.map(item => item.id).join()//获取所有选中行的id组成的字符串，以逗号分隔
+      showPhoto(url) {
+        this.dialogFormVisible = true;
+        this.showUrl = 'http://192.168.30.47:8087' + url + '?x-oss-process=image/resize,m_fill,h_50,w_50'
       },
-//            handleCurrentChange(row, event, column) {
-//                this.$refs.table.toggleRowSelection(row)
-//            },
-      onTabClick() {
-        if (this.optionsTab == "0") {
-          this.status = "";
-        } else if (this.optionsTab == "1") {
-          this.status = "1";
-        } else if (this.optionsTab == "2") {
-          this.status = "0";
-        }
-        this.getData();
-      },
-      searchData() {
-        var self = this;
-        var sortCodeStr = 'id';//排序字段
-        var sortRoleStr = 'desc';//排序方式
-        let params = {
-          companyId: localStorage.companyID,
-          page: this.pageIdx,
-          limit: this.pageSize,
-          goodsName: this.goodsNameNew,
-          typeId: this.goodTypeId,
-          brandId: this.goodsBrandId,
-          providerId: this.provider,
-          status: this.statusnew,
-          sortCode: sortCodeStr,
-          sortRole: sortRoleStr
-        }
-        http.axiosGet(api.goodsInfo.selectAll, params,
-          response => {
-            self.loading = false;
-            if (response.data.success) {
-              self.tableData = response.data.result.data;
-              self.totalPage = response.data.result.total;
-            } else {
-              self.controlElAlert('获取数据失败', 'error');
-            }
-          })
-        this.dialogVisible = false;
-        this.goodsNameNew = '';
-        this.goodsBrandId = '';
-        this.provider = '';
-        this.statusnew = '';
-        this.goodTypeId = '';
-      }
     },
     watch: {
       'dialogImportGoods': function (val, oldVal) {

@@ -3,7 +3,9 @@
     <header class="page-header">
       <div class="header-content">
         <div class="pageTitle">
-          <i class="bg-theme"></i>{{addEdit}}商品
+          <i class="bg-theme"></i>
+          <span v-if="isview=='0'">{{addEdit}}商品</span>
+          <span v-if="isview=='1'">商品详情</span>
         </div>
         <div class="refresh">
           <el-button @click.native="goBack()" class="btn-border"><i class="el-icon-arrow-left"></i> 返回</el-button>
@@ -11,35 +13,27 @@
       </div>
     </header>
     <section class="main-right-inner">
-      <div class="top">
-        <el-col :span="12">
-          {{addEdit}}商品
-        </el-col>
-        <el-col :span="12" class="text-r p-r-10" v-if="cid">
-          <el-button @click.native="dialogFormVisible=true" type="primary">设置提醒</el-button>
-        </el-col>
-      </div>
       <div class="main-cont">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="130px"
                  class="demo-ruleForm cover-form-style">
           <el-row>
             <el-col>
               <el-form-item label="商品名称：" prop="name">
-                <el-input v-model="ruleForm.goodsName"></el-input>
+                <el-input v-model="ruleForm.goodsName" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
               <el-form-item label="商品编码：" prop="code">
-                <el-input v-model="ruleForm.goodsCode"></el-input>
+                <el-input v-model="ruleForm.goodsCode" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
               <el-form-item label="商品类别：" prop="typeid">
-                <el-select filterable v-model="ruleForm.typeId" placeholder="全部" class="selft-select-width"
+                <el-select filterable v-model="ruleForm.typeId" placeholder="全部" :disabled="isview=='1'" class="selft-select-width"
                            style="display: block">
                   <el-option
                     v-for="item in goodsTypeArr"
@@ -54,7 +48,7 @@
           <el-row>
             <el-col>
               <el-form-item label="品牌：" prop="brandid">
-                <el-select filterable v-model="ruleForm.brandId" placeholder="全部" class="selft-select-width"
+                <el-select filterable v-model="ruleForm.brandId" placeholder="全部" :disabled="isview=='1'" class="selft-select-width"
                            style="display: block">
                   <el-option
                     v-for="item in goodsBrandArr"
@@ -69,28 +63,28 @@
           <el-row>
             <el-col>
               <el-form-item label="规格：" prop="standard">
-                <el-input v-model="ruleForm.standard"></el-input>
+                <el-input v-model="ruleForm.standard" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
               <el-form-item label="预设进价：" prop="buyprice">
-                <el-input v-model="ruleForm.buyPrice"></el-input>
+                <el-input v-model="ruleForm.buyPrice" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
               <el-form-item label="预设售价：" prop="saleprice">
-                <el-input v-model="ruleForm.sellPrice"></el-input>
+                <el-input v-model="ruleForm.sellPrice" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
               <el-form-item label="商品描述：" prop="descs">
-                <el-input v-model="ruleForm.desc"></el-input>
+                <el-input v-model="ruleForm.desc" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -102,6 +96,7 @@
                   :headers="headers"
                   :action="upFileUrl"
                   :data="upfileParam"
+                  :disabled="isview=='1'"
                   :show-file-list="false"
                   :on-success="handleAvatarSuccess"
                   :before-upload="beforeAvatarUpload">
@@ -113,7 +108,7 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col>
+            <el-col v-if="isview=='0'">
               <el-form-item class="control-primary">
                 <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
               </el-form-item>
@@ -164,6 +159,7 @@
       };
 
       return {
+        isview: this.$route.query.isview,
         addEdit: '',
         cid: this.$route.query.cid,
         mapDialogIsShow: false,//地图弹框
@@ -176,8 +172,8 @@
         ruleForm: {
           goodsName: '',
           goodsCode: '',
-          typeId: 0,
-          brandId: 0,
+          typeId: '',
+          brandId: '',
           unit: '',
           color: '',
           standard: '',
@@ -349,7 +345,10 @@
               self.ruleForm.buyPrice = resData.buyprice;
               self.ruleForm.sellPrice = resData.saleprice;//
               self.ruleForm.desc = resData.descs;//
-              self.ruleForm.picture = resData.picture;//
+              self.ruleForm.picture = resData.pictureUrl;
+              / /
+              self.ruleForm.pictureId = resData.picture;
+              / /
               self.editData = resData;
             } else {
               self.controlElAlert('请求数据失败，刷新重试', 'warning');

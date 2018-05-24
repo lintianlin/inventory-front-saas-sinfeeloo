@@ -63,13 +63,13 @@ export default {
   },
   getGoodsType(callback) {//获取商品类别，商品类别下拉框
     let params = {
-      typeName: '品类'
+      typeId: 2
     }
     this.axiosGet(api.param.getParamListByPage, params, callback);
   },
   getBrand(callback) {//获取品牌信息
     let params = {
-      typeName: '品牌'
+      typeId: 1
     }
     this.axiosGet(api.param.getParamListByPage, params, callback);
   }

@@ -14,6 +14,13 @@ export default {
     deleteGoods: 'goods/deleteGoods', // 删除商品
     getGoodsDetail: 'goods/getGoodsDetail' // 获得商品详情
   },
+  storage: {
+    getStorageListByPage: 'storage/getStorageListByPage',
+    addStorage: 'storage/addStorage',
+    modifyStorage: 'storage/modifyStorage',
+    deleteStorage: 'storage/deleteStorage',
+    getStorageDetail: 'storage/getStorageDetail'
+  },
   param: {
     getParamListByPage: 'param/getParamListByPage' // 获取参数列表
   },

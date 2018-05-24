@@ -42,6 +42,11 @@ var routes = [
         component: resolve => require(['@/page/basicinfo/addGoods'], resolve)
       }, // 添加商品
       {
+        path: '/basicinfo/addStorage',
+        meta: {requireAuth: true, showCopyRight: true},
+        component: resolve => require(['@/page/basicinfo/addStorage'], resolve)
+      }, // 添加仓库
+      {
         path: '/purchase/purchaseOrder',
         meta: {requireAuth: true, showCopyRight: true},
         component: resolve => require(['@/page/purchase/purchaseOrder'], resolve)

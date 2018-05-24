@@ -4,8 +4,8 @@
       <div class="header-content">
         <div class="pageTitle">
           <i class="bg-theme"></i>
-          <span v-if="isview=='0'">{{addEdit}}商品</span>
-          <span v-if="isview=='1'">商品详情</span>
+          <span v-if="isview=='0'">{{addEdit}}仓库</span>
+          <span v-if="isview=='1'">仓库详情</span>
         </div>
         <div class="refresh">
           <el-button @click.native="goBack()" class="btn-border"><i class="el-icon-arrow-left"></i> 返回</el-button>
@@ -18,95 +18,45 @@
                  class="demo-ruleForm cover-form-style">
           <el-row>
             <el-col>
-              <el-form-item label="商品名称：" prop="goodsName">
-                <el-input v-model="ruleForm.goodsName" :readonly="isview=='1'"></el-input>
+              <el-form-item label="仓库名称：" prop="name">
+                <el-input v-model="ruleForm.name" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
-              <el-form-item label="商品编码：" prop="goodsCode">
-                <el-input v-model="ruleForm.goodsCode" :readonly="isview=='1'"></el-input>
+              <el-form-item label="仓库编码：" prop="code">
+                <el-input v-model="ruleForm.code" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
-              <el-form-item label="商品类别：" prop="typeId">
-                <el-select filterable v-model="ruleForm.typeId" placeholder="全部" :disabled="isview=='1'" class="selft-select-width"
-                           style="display: block">
-                  <el-option
-                    v-for="item in goodsTypeArr"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
+              <el-form-item label="仓库地址：" prop="address">
+                <el-input v-model="ruleForm.address" placeholder="点击右侧按钮选择地址"></el-input>
+                <el-tooltip class="item" effect="dark" content="点击打开地图选择地址" placement="right-start">
+                  <el-button type="primary" class="setPosition-customerAdd" @click="mapDialogIsShow=!mapDialogIsShow"><i
+                    class="eliconfont elicon-position"></i></el-button>
+                </el-tooltip>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
-              <el-form-item label="品牌：" prop="brandId">
-                <el-select filterable v-model="ruleForm.brandId" placeholder="全部" :disabled="isview=='1'" class="selft-select-width"
-                           style="display: block">
-                  <el-option
-                    v-for="item in goodsBrandArr"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
+              <el-form-item label="描述" prop="description">
+                <el-input type="textarea" :rows="3" v-model="ruleForm.desc" placeholder="请输入内容"
+                          style="width: 250px"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
-              <el-form-item label="规格：" prop="standard">
-                <el-input v-model="ruleForm.standard" :readonly="isview=='1'"></el-input>
+              <el-form-item label="负责人：" prop="desc">
+                <el-input v-model="ruleForm.admin" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
-            <el-col>
-              <el-form-item label="预设进价：" prop="buyPrice">
-                <el-input v-model="ruleForm.buyPrice" :readonly="isview=='1'"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col>
-              <el-form-item label="预设售价：" prop="sellPrice">
-                <el-input v-model="ruleForm.sellPrice" :readonly="isview=='1'"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col>
-              <el-form-item label="商品描述：" prop="desc">
-                <el-input v-model="ruleForm.desc" :readonly="isview=='1'"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="20">
-              <el-form-item label="商品图片：" prop="picture">
-                <el-upload
-                  class="avatar-uploader align-left"
-                  :headers="headers"
-                  :action="upFileUrl"
-                  :data="upfileParam"
-                  :disabled="isview=='1'"
-                  :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
-                  :before-upload="beforeAvatarUpload">
-                  <img v-if="ruleForm.picture" :src="'http://192.168.30.47:8087'+ruleForm.picture" class="avatar">
-                  <i class="el-icon-plus avatar-uploader-icon" v-else></i>
-                  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，文件不能超过500kb</div>
-                </el-upload>
-              </el-form-item>
-            </el-col>
-          </el-row>
+
           <el-row>
             <el-col v-if="isview=='0'">
               <el-form-item class="control-primary">
@@ -126,6 +76,19 @@
               :closable="false"
               show-icon>
     </el-alert>
+    <div class="mapDialog-mask" v-if="mapDialogIsShow" @click="mapDialogIsShow=!mapDialogIsShow">
+      <div class="mapDialog" @click="mapDialogIsShow=!mapDialogIsShow">
+        <div class="mapDialog-top"><i class="el-icon-close" @click="mapDialogIsShow=!mapDialogIsShow"></i></div>
+        <amap class="smallAmap"
+              :centerPos="centerPosition"
+              :latitudePos="ruleForm.latitude"
+              :longitudePos="ruleForm.longitude"
+              :isShowSearchPositioin="isShowSearchPositioin"
+              v-on:laglatChange="getLaglat"
+              v-on:addressChange="getAddress"
+              v-on:regionDivide="getRegion"></amap>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -133,28 +96,31 @@
   import api from '@/fetch/api'
   import tools from '@/fetch/tools'
   import http from '@/fetch/http'
+  import gdmap from '@/components/map/mapAdd.vue'
 
   export default {
-    components: {},
+    components: {
+      'amap': gdmap
+    },
     data() {
       var checkName = (rule, value, callback) => {
         var self = this;
         if (!value) {
-          return callback(new Error('商品名称不能为空'));
+          return callback(new Error('仓库名称不能为空'));
         }
         if (!(/^[\u4E00-\u9FA5A-Za-z0-9_]{2,50}$/.test(value))) {
           callback(new Error('请输入2~50个字符，可以是汉字、字母、数字和下划线'));
-        }else{
+        } else {
           callback();
         }
       };
 
-      var checkGoodsCode = (rule, value, callback) => {
+      var checkCode = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('商品编码不能为空'));
+          return callback(new Error('仓库编码不能为空'));
         }
         if (!(/^[\u4E00-\u9FA5A-Za-z0-9_()-（）]{2,50}/.test(value))) {
-          callback(new Error('请输入合法的商品编码，长度为2~50个字符'));
+          callback(new Error('请输入合法的仓库编码，长度为2~50个字符'));
         } else {
           callback();
         }
@@ -163,8 +129,9 @@
       return {
         isview: this.$route.query.isview,
         addEdit: '',
-        cid: this.$route.query.cid,
+        storageid: this.$route.query.storageid,
         mapDialogIsShow: false,//地图弹框
+        centerPosition: [119.117, 36.710],//打开地图中心点
         isShowSearchPositioin: true,//是否显示地图的搜索框
         upFileUrl: api.pic.uploadPhoto,//客户图片上传 URL
         headers: {
@@ -172,34 +139,27 @@
         },//token
         upfileParam: {},
         ruleForm: {
-          goodsName: '',
-          goodsCode: '',
-          typeId: '',
-          brandId: '',
-          unit: '',
-          color: '',
-          standard: '',
-          material: '',
-          buyPrice: '',
-          sellPrice: '',
+          name: '',
+          code: '',
+          address: '',
           desc: '',
-          picture: '',
-          pictureId: 0,
-          updater: ''
+          admin: '',
+          latitude: 0,
+          longitude: 0,
+          province: '',//省
+          city: '',//市
+          district: '',//区
+          street: '',//街道
         },
         editData: '',
         rules: {
-          goodsName: [
+          name: [
             {validator: checkName, trigger: 'blur', required: true}
           ],
-          goodsCode: [
-            {validator: checkGoodsCode, trigger: 'change', required: true},
+          code: [
+            {validator: checkCode, trigger: 'change', required: true},
           ]
         },
-        peopleArr: [],
-        linesArr: [],
-        goodsTypeArr: [],
-        goodsBrandArr: [],
         dialogFormVisible: false,//提醒框
         formInline: {},
         elAlertShow: false,//提示框是否可显示
@@ -211,9 +171,9 @@
     mounted() {
       var script = document.createElement('script')
       script.type = 'text/javascript'
+      script.src = 'http://webapi.amap.com/maps?v=1.4.0&key=5ed8865f5c083dad30ef1d50e7a91c86&plugin=AMap.MouseTool,AMap.PolyEditor,AMap.DistrictSearch,AMap.MarkerClusterer,AMap.Autocomplete,AMap.PlaceSearch'   // 高德地图
       document.body.appendChild(script)
-      this.getSelect();//获取下拉框
-      if (this.$route.query.goodsid != null) {
+      if (this.$route.query.storageid != null) {
         this.getGoodsInfo();
         this.addEdit = '编辑';
       } else {
@@ -221,11 +181,26 @@
       }
     },
     methods: {
+      getLaglat(laglat) {//地图获取经纬度
+        this.ruleForm.longitude = laglat.lng;
+        this.ruleForm.latitude = laglat.lat;
+      },
+      getAddress(address) {//地图获取地址
+        this.ruleForm.address = address;
+      },
+      getRegion(address) {//地图获取区域划分
+        if (address) {
+          this.ruleForm.province = address.province;
+          this.ruleForm.city = address.city;
+          this.ruleForm.district = address.district;
+          this.ruleForm.street = address.township;
+        }
+      },
       submitForm(formName) {
         var self = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            if (this.$route.query.goodsid != null) {
+            if (this.$route.query.storageid != null) {
               self.updateData();
             } else {
               self.submitData();
@@ -260,22 +235,14 @@
       submitData() {//提交数据
         var self = this;
         let params = {
-          goodsName: self.ruleForm.goodsName,
-          goodsCode: self.ruleForm.goodsCode,
-          typeId: self.ruleForm.typeId,
-          brandId: self.ruleForm.brandId,
-          unit: self.ruleForm.unit,
-          color: self.ruleForm.color,
-          standard: self.ruleForm.standard,
-          material: self.ruleForm.material,
-          buyPrice: self.ruleForm.buyPrice,
-          sellPrice: self.ruleForm.sellPrice,
+          storageName: self.ruleForm.name,
+          storageCode: self.ruleForm.code,
+          storageAddress: self.ruleForm.address,
           desc: self.ruleForm.desc,
-          picture: self.ruleForm.pictureId,
-          updater: localStorage.userId
+          administratorId: self.ruleForm.admin,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.goods.addGoods, params,
+        http.axiosPost(api.storage.addStorage, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -288,23 +255,15 @@
       updateData() { //提交编辑数据
         var self = this;
         let params = {
-          id: self.$route.query.goodsid,
-          goodsName: self.ruleForm.goodsName,
-          goodsCode: self.ruleForm.goodsCode,
-          typeId: self.ruleForm.typeId,
-          brandId: self.ruleForm.brandId,
-          unit: self.ruleForm.unit,
-          color: self.ruleForm.color,
-          standard: self.ruleForm.standard,
-          material: self.ruleForm.material,
-          buyPrice: self.ruleForm.buyPrice,
-          sellPrice: self.ruleForm.sellPrice,
+          id: self.$route.query.storageid,
+          storageName: self.ruleForm.name,
+          storageCode: self.ruleForm.code,
+          storageAddress: self.ruleForm.address,
           desc: self.ruleForm.desc,
-          picture: self.ruleForm.pictureId,
-          updater: localStorage.userId
+          administratorId: self.ruleForm.admin,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.goods.modifyGoods, params,
+        http.axiosPost(api.storage.modifyStorage, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -314,43 +273,20 @@
             }
           })
       },
-      getSelect() {//获取页面所需下拉框
-        var self = this;
-        http.getGoodsType(//获取品类
-          response => {
-            self.goodsTypeArr = response.data.data.list;
-          }
-        )
-        http.getBrand(//获取品牌
-          response => {
-            self.goodsBrandArr = response.data.data.list;
-          }
-        )
-      },
-      getGoodsInfo() {//根据id获取商品数据
+      getGoodsInfo() {//根据id获取仓库数据
         var self = this;
         var params = {
-          id: self.$route.query.goodsid
+          id: self.$route.query.storageid
         }
-        http.axiosGet(api.goods.getGoodsDetail, params,
+        http.axiosGet(api.storage.getStorageDetail, params,
           response => {
             if (response.data.rc === 200) {
               var resData = response.data.data;
-              self.ruleForm.goodsName = resData.name;
-              self.ruleForm.goodsCode = resData.code;
-              self.ruleForm.typeId = resData.typeid;
-              self.ruleForm.brandId = resData.brandid;
-              self.ruleForm.unit = resData.unit;
-              self.ruleForm.color = resData.color;
-              self.ruleForm.standard = resData.standard;
-              self.ruleForm.material = resData.material;
-              self.ruleForm.buyPrice = resData.buyprice;
-              self.ruleForm.sellPrice = resData.saleprice;//
-              self.ruleForm.desc = resData.descs;//
-              self.ruleForm.picture = resData.pictureUrl;
-              / /
-              self.ruleForm.pictureId = resData.picture;
-              / /
+              self.ruleForm.name = resData.name;
+              self.ruleForm.code = resData.code;
+              self.ruleForm.address = resData.address;
+              self.ruleForm.desc = resData.descs;
+              self.ruleForm.admin = resData.adminName;
               self.editData = resData;
             } else {
               self.controlElAlert('请求数据失败，刷新重试', 'warning');

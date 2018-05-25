@@ -38,6 +38,7 @@ export default {
     getEmployeeListByPage:'employee/getEmployeeListByPage',
     modifyEmployee:'employee/modifyEmployee',
     deleteEmployee:'employee/deleteEmployee',
+    getEmployeeDetail:'employee/getEmployeeDetail',
   },
   menu: {// 菜单管理
     getPermissionWithMenuList: '/menu/getMenuList'// 获取用户权限对应的菜单列表

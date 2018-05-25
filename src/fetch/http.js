@@ -72,5 +72,11 @@ export default {
       typeId: 1
     }
     this.axiosGet(api.param.getParamListByPage, params, callback);
+  },
+  getEmployeeType(callback) {//获取员工类型
+    let params = {
+      typeId: 3
+    }
+    this.axiosGet(api.param.getParamListByPage, params, callback);
   }
 }

@@ -314,7 +314,7 @@
         }
         this.showCancelMessage(
           () => {
-            http.axiosPost(api.storage.deleteStorage, params,
+            http.axiosPost(api.employee.deleteEmployee, params,
               response => {
                 if (response.data.rc === 200) {
                   self.controlElAlert('删除成功', 'success');

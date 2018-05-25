@@ -12,6 +12,7 @@ import axios from './router/http'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '../static/css/common.css'
+import '../static/css/iconfont.css'
 Vue.use(ElementUI)
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false

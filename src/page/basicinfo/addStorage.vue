@@ -33,9 +33,9 @@
           <el-row>
             <el-col>
               <el-form-item label="仓库地址：" prop="address">
-                <el-input v-model="ruleForm.address" placeholder="点击右侧按钮选择地址"></el-input>
+                <el-input v-model="ruleForm.address" :readonly="isview=='1'" placeholder="点击右侧按钮选择地址"></el-input>
                 <el-tooltip class="item" effect="dark" content="点击打开地图选择地址" placement="right-start">
-                  <el-button type="primary" class="setPosition-customerAdd" @click="mapDialogIsShow=!mapDialogIsShow"><i
+                  <el-button type="primary" class="setPosition-customerAdd" :disabled ="isview=='1'" @click="mapDialogIsShow=!mapDialogIsShow"><i
                     class="eliconfont elicon-position"></i></el-button>
                 </el-tooltip>
               </el-form-item>
@@ -44,15 +44,22 @@
           <el-row>
             <el-col>
               <el-form-item label="描述" prop="description">
-                <el-input type="textarea" :rows="3" v-model="ruleForm.desc" placeholder="请输入内容"
+                <el-input type="textarea" :rows="3" v-model="ruleForm.desc" :readonly="isview=='1'" placeholder="请输入内容"
                           style="width: 250px"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
-              <el-form-item label="负责人：" prop="desc">
-                <el-input v-model="ruleForm.admin" :readonly="isview=='1'"></el-input>
+              <el-form-item label="负责人：" prop="admin" >
+                <el-select filterable v-model="ruleForm.admin" placeholder="无" class="selft-select-width" :disabled="isview=='1'" style="display: block">
+                  <el-option
+                    v-for="item in adminArr"
+                    :key="item.id"
+                    :label="item.name+' '+item.mobile"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -152,6 +159,7 @@
           street: '',//街道
         },
         editData: '',
+        adminArr: [],
         rules: {
           name: [
             {validator: checkName, trigger: 'blur', required: true}
@@ -171,7 +179,7 @@
     mounted() {
       var script = document.createElement('script')
       script.type = 'text/javascript'
-      script.src = 'http://webapi.amap.com/maps?v=1.4.0&key=5ed8865f5c083dad30ef1d50e7a91c86&plugin=AMap.MouseTool,AMap.PolyEditor,AMap.DistrictSearch,AMap.MarkerClusterer,AMap.Autocomplete,AMap.PlaceSearch'   // 高德地图
+      script.src = 'http://webapi.amap.com/maps?v=1.4.0&key=3ae9a5dc95e990f4a3508b56639cfab4&plugin=AMap.MouseTool,AMap.PolyEditor,AMap.DistrictSearch,AMap.MarkerClusterer,AMap.Autocomplete,AMap.PlaceSearch'   // 高德地图
       document.body.appendChild(script)
       if (this.$route.query.storageid != null) {
         this.getGoodsInfo();
@@ -179,6 +187,7 @@
       } else {
         this.addEdit = '添加';
       }
+      this.getAdminSelect()
     },
     methods: {
       getLaglat(laglat) {//地图获取经纬度
@@ -195,6 +204,16 @@
           this.ruleForm.district = address.district;
           this.ruleForm.street = address.township;
         }
+      },
+      getAdminSelect() {//获取负责人数据
+        var self = this;
+        let params = {}
+        http.axiosGet(api.employee.getEmployeeListByPage, params,
+          response => {
+            if (response.data.rc === 200) {
+              self.adminArr = response.data.data.list
+            }
+          })
       },
       submitForm(formName) {
         var self = this;

@@ -263,33 +263,9 @@
     margin-right: 8px;
   }
 
-  /*.el-menu-vertical{*/
-  /*el-submenu{*/
-  /*template {*/
-  /*i {*/
-  /*&.icon_basic_setting {*/
-  /*background: url("../assets/images/menu_left1.png") no-repeat;*/
-  /*}*/
-  /*&.icon_purchase {*/
-  /*background: url("../assets/images/menu_left3.png") no-repeat;*/
-  /*}*/
-  /*&.icon_sales {*/
-  /*background: url("../assets/images/menu_left3.png") no-repeat;*/
-  /*}*/
-  /*&.icon_storage {*/
-  /*background: url("../assets/images/menu_left2.png") no-repeat;*/
-  /*}*/
-  /*&.icon_analysis {*/
-  /*background: url("../assets/images/menu_left4.png") no-repeat;*/
-  /*}*/
-  /*&.icon_system {*/
-  /*background: url("../assets/images/menu_left1.png") no-repeat;*/
-  /*}*/
-  /*}*/
-  /*}*/
-  /*}*/
-
-  /*}*/
+  .eliconfont {
+    margin-right: 4px;
+  }
 
   .el-header .top_right p span {
     line-height: 30px;

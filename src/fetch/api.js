@@ -22,23 +22,27 @@ export default {
     getStorageDetail: 'storage/getStorageDetail'
   },
   param: {
-    getParamListByPage: 'param/getParamListByPage' // 获取参数列表
+    getParamListByPage: 'param/getParamListByPage', // 获取参数列表
+    addParam: 'param/addParam', // 添加参数
+    modifyParam: 'param/modifyParam',// 修改参数
+    deleteParam: 'param/deleteParam', // 删除参数
+    getParamTypeList: 'param/getParamTypeList' // 获取参数类型
   },
   user: {// 用户管理
     modifyPassword: 'user/modifyPassword',// 修改密码
-    getUserListByPage:'user/getUserListByPage',
-    addUser:'user/addUser',
-    modifyUser:'user/modifyUser',
-    deleteUser:'user/deleteUser',
-    operateLockUser:'user/operateLockUser'
+    getUserListByPage: 'user/getUserListByPage',
+    addUser: 'user/addUser',
+    modifyUser: 'user/modifyUser',
+    deleteUser: 'user/deleteUser',
+    operateLockUser: 'user/operateLockUser'
 
   },
   employee: {// 员工管理
     addEmployee: 'employee/addEmployee',
-    getEmployeeListByPage:'employee/getEmployeeListByPage',
-    modifyEmployee:'employee/modifyEmployee',
-    deleteEmployee:'employee/deleteEmployee',
-    getEmployeeDetail:'employee/getEmployeeDetail',
+    getEmployeeListByPage: 'employee/getEmployeeListByPage',
+    modifyEmployee: 'employee/modifyEmployee',
+    deleteEmployee: 'employee/deleteEmployee',
+    getEmployeeDetail: 'employee/getEmployeeDetail',
   },
   menu: {// 菜单管理
     getPermissionWithMenuList: '/menu/getMenuList'// 获取用户权限对应的菜单列表

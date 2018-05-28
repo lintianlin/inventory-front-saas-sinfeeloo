@@ -78,5 +78,10 @@ export default {
       typeId: 3
     }
     this.axiosGet(api.param.getParamListByPage, params, callback);
-  }
+  },
+  getParamType(callback) {//获取参数类型
+    let params = {
+    }
+    this.axiosGet(api.param.getParamTypeList, params, callback);
+  },
 }

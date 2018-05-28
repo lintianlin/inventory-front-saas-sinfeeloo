@@ -45,6 +45,13 @@ export default {
     deleteEmployee: 'employee/deleteEmployee',
     getEmployeeDetail: 'employee/getEmployeeDetail',
   },
+  supplier:{//供应商管理
+    addSupplier:'supplier/addSupplier',
+    getSupplierListByPage:'supplier/getSupplierListByPage',
+    modifySupplier:'supplier/modifySupplier',
+    deleteSupplier:'supplier/deleteSupplier',
+    getById:'supplier/getById'
+  },
   menu: {// 菜单管理
     getPermissionWithMenuList: '/menu/getMenuList'// 获取用户权限对应的菜单列表
   },

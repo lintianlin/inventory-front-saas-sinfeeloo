@@ -17,27 +17,13 @@
                 <div style="box-sizing: border-box;">
                   <el-form :inline="true" :model="formInline" class="demo-form-inline"
                            label-width="100px">
-                    <el-form-item label="员工姓名：">
-                      <el-input v-model="formInline.name" placeholder="输入员工姓名关键字"
+                    <el-form-item label="供应商：">
+                      <el-input v-model="formInline.name" placeholder="输入供应商名称关键字"
                                 size="small"></el-input>
                     </el-form-item>
-                    <el-form-item label="手机号：">
-                      <el-input v-model="formInline.mobile" placeholder="输入员工手机号"
+                    <el-form-item label="联系人：">
+                      <el-input v-model="formInline.linkman" placeholder="输入联系人姓名关键字"
                                 size="small"></el-input>
-                    </el-form-item>
-
-                    <el-form-item label="类型：">
-                      <el-select class="self-select" filterable v-model="formInline.type"
-                                 placeholder="全部" size="small"
-                                 @change="getData()">
-                        <el-option label="全部" value="全部"></el-option>
-                        <el-option
-                          v-for="item in typeArr"
-                          :key="item.id"
-                          :label="item.name"
-                          :value="item.id">
-                        </el-option>
-                      </el-select>
                     </el-form-item>
                   </el-form>
                 </div>
@@ -74,8 +60,8 @@
 
                 <el-table-column
                   prop="name"
-                  label="员工姓名"
-                  min-width="40"
+                  label="供应商名称"
+                  min-width="80"
                 >
                   <template slot-scope="scope">
                     <span class="text-grey"> {{ scope.row.name }}</span>
@@ -83,29 +69,19 @@
                 </el-table-column>
 
                 <el-table-column
-                  prop="code"
-                  label="工号"
+                  prop="linkman"
+                  label="联系人"
                   min-width="40"
                 >
                   <template slot-scope="scope">
-                    <span class="text-grey"> {{ scope.row.code }}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column
-                  prop="idcard"
-                  label="身份证号"
-                  min-width="80"
-                >
-                  <template slot-scope="scope">
-                    <span class="text-grey"> {{ scope.row.idcard }}</span>
+                    <span class="text-grey"> {{ scope.row.linkman }}</span>
                   </template>
                 </el-table-column>
 
                 <el-table-column
                   prop="mobile"
-                  label="手机号"
-                  min-width="50"
+                  label="联系电话"
+                  min-width="40"
                 >
                   <template slot-scope="scope">
                     <span class="text-grey"> {{ scope.row.mobile }}</span>
@@ -113,27 +89,7 @@
                 </el-table-column>
 
                 <el-table-column
-                  prop="sex"
-                  label="性别"
-                  min-width="20"
-                >
-                  <template slot-scope="scope">
-                    <span class="text-grey"> {{ scope.row.sex==1?'男':'女' }}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column
-                  prop="birthdayStr"
-                  label="生日"
-                  min-width="40"
-                >
-                  <template slot-scope="scope">
-                    <span class="text-grey"> {{ scope.row.birthdayStr }}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column
-                  prop="typeName"
+                  prop="address"
                   label="地址"
                   min-width="120">
                   <template slot-scope="scope">
@@ -141,21 +97,12 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="email"
-                  label="邮箱"
-                  min-width="70"
+                  prop="desc"
+                  label="描述"
+                  min-width="100"
                 >
                   <template slot-scope="scope">
-                    <span class="text-grey"> {{ scope.row.email }}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column
-                  prop="typeName"
-                  label="职位类型"
-                  min-width="30">
-                  <template slot-scope="scope">
-                    <span class="text-grey"> {{ scope.row.typeName }}</span>
+                    <span class="text-grey"> {{ scope.row.descs }}</span>
                   </template>
                 </el-table-column>
 
@@ -217,7 +164,6 @@
     data() {
       return {
         tableData: [],
-        typeArr: [], // 员工类型下拉框
         valuePage: '', // 显示条数model
         valueSort: '', // 排序方式model
         pageIdx: 1, // 当前页
@@ -226,12 +172,10 @@
         pageIdx2: 1, // 当前页
         pageSize2: 20,
         totalPage2: 0, // 总条数
-        brandArr: [], // 商品品牌下拉框
-        employeeTypeArr: [], // 商品品类下拉框
+
         formInline: {
           name: '',
-          mobile: '',
-          type: ''
+          linkman: ''
         },
         elAlertShow: false, // 提示框是否可显示
         elAlertTitle: 'fqwefq', // 提示框文字
@@ -246,14 +190,7 @@
         },
         rules: {},
         sels: [],
-        status: '',
-        premiss: { // 页面显示权限
-          addHas: false,
-          editHas: false,
-          detailHas: false,
-          exportHas: false,
-          enableHas: false
-        },
+        status: ''
       }
     },
     created() {
@@ -261,7 +198,6 @@
     },
     mounted() {
       this.getData()
-      this.getSelectValue()
       var sh = tools.getWindowSize('h') - 468
       $(".box-content .el-table").css({'min-height': sh + 'px'})
     },
@@ -272,10 +208,9 @@
           page: this.pageIdx,
           limit: this.pageSize,
           name: this.formInline.name,
-          mobile: this.formInline.mobile,
-          type: this.formInline.type=='全部'?'':this.formInline.type
+          linkman: this.formInline.linkman
         }
-        http.axiosGet(api.employee.getEmployeeListByPage, params,
+        http.axiosGet(api.supplier.getSupplierListByPage, params,
           response => {
             self.loading = false
             localStorage.removeItem('pageParam')
@@ -287,25 +222,17 @@
             }
           })
       },
-      getSelectValue() { //
-        var self = this;
-        http.getEmployeeType(//获取职位类型
-          response => {
-            self.typeArr = response.data.data.list
-          }
-        )
-      },
       formAdd() {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/basicinfo/addEmployee?isview=0'})
+        this.$router.push({path: '/basicinfo/addSupplier?isview=0'})
       },
       formView(id) {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/basicinfo/addEmployee?employeeid=' + id + '&isview=1'})
+        this.$router.push({path: '/basicinfo/addSupplier?id=' + id + '&isview=1'})
       },
       formEdit(id) {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/basicinfo/addEmployee?employeeid=' + id + '&isview=0'})
+        this.$router.push({path: '/basicinfo/addSupplier?id=' + id + '&isview=0'})
       },
       formDelete(id) {//删除
         var self = this;
@@ -314,7 +241,7 @@
         }
         this.showCancelMessage(
           () => {
-            http.axiosPost(api.employee.deleteEmployee, params,
+            http.axiosPost(api.supplier.deleteSupplier, params,
               response => {
                 if (response.data.rc === 200) {
                   self.controlElAlert('删除成功', 'success');
@@ -329,12 +256,11 @@
       },
       setParamsLocalStorage() { // 查询条件存入缓存
         var pageParam = {
-          pageName: 'employeeList',
+          pageName: 'supplierList',
           page: this.pageIdx,
           limit: this.pageSize,
           name: this.formInline.name,
-          mobile: this.formInline.mobile,
-          type: this.formInline.type,
+          linkman: this.formInline.linkman
         }
         localStorage.pageParam = JSON.stringify(pageParam);
       },
@@ -342,12 +268,11 @@
         var pageParam = localStorage.pageParam;
         if (pageParam) {
           pageParam = eval("(" + pageParam + ")");
-          if (pageParam.pageName == 'employeeList') {
+          if (pageParam.pageName == 'supplierList') {
             this.pageIdx = pageParam.page;
             this.pageSize = pageParam.limit;
             this.formInline.name = pageParam.name;
-            this.formInline.mobile = pageParam.mobile;
-            this.formInline.type = pageParam.type;
+            this.formInline.linkman = pageParam.linkman;
           }
         }
       },
@@ -375,8 +300,7 @@
       resetData() {//重置查询条件
         this.loading = true;
         this.formInline.name = '';
-        this.formInline.mobile = '';
-        this.formInline.type = '';
+        this.formInline.linkman = '';
         this.getData();
       },
       handleCurrentChangeDialog(val) {//分页
@@ -403,11 +327,7 @@
       },
       selsChange(sels) {
         this.sels = sels
-      },
-      showPhoto(url) {
-        this.dialogFormVisible = true;
-        this.showUrl = 'http://192.168.30.47:8087' + url + '?x-oss-process=image/resize,m_fill,h_50,w_50'
-      },
+      }
     },
   }
 </script>

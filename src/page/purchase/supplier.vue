@@ -224,15 +224,15 @@
       },
       formAdd() {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/basicinfo/addSupplier?isview=0'})
+        this.$router.push({path: '/purchase/addSupplier?isview=0'})
       },
       formView(id) {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/basicinfo/addSupplier?id=' + id + '&isview=1'})
+        this.$router.push({path: '/purchase/addSupplier?id=' + id + '&isview=1'})
       },
       formEdit(id) {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/basicinfo/addSupplier?id=' + id + '&isview=0'})
+        this.$router.push({path: '/purchase/addSupplier?id=' + id + '&isview=0'})
       },
       formDelete(id) {//删除
         var self = this;

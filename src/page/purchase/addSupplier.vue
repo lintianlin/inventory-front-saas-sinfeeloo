@@ -4,8 +4,8 @@
       <div class="header-content">
         <div class="pageTitle">
           <i class="bg-theme"></i>
-          <span v-if="isview=='0'">{{addEdit}}员工</span>
-          <span v-if="isview=='1'">员工详情</span>
+          <span v-if="isview=='0'">{{addEdit}}供应商</span>
+          <span v-if="isview=='1'">供应商详情</span>
         </div>
         <div class="refresh">
           <el-button @click.native="goBack()" class="btn-border"><i class="el-icon-arrow-left"></i> 返回</el-button>
@@ -18,52 +18,23 @@
                  class="demo-ruleForm cover-form-style">
           <el-row>
             <el-col>
-              <el-form-item label="姓名：" prop="name">
+              <el-form-item label="供应商名称：" prop="name">
                 <el-input v-model="ruleForm.name" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col>
-              <el-form-item label="工号：" prop="code">
-                <el-input v-model="ruleForm.code" :readonly="isview=='1'"></el-input>
+              <el-form-item label="联系人：" prop="linkman">
+                <el-input v-model="ruleForm.linkman" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
 
           <el-row>
             <el-col>
-              <el-form-item label="身份证号：" prop="idCard">
-                <el-input v-model="ruleForm.idCard" :readonly="isview=='1'"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-row>
-            <el-col>
-              <el-form-item label="手机号：" prop="mobile">
+              <el-form-item label="联系电话：" prop="mobile">
                 <el-input v-model="ruleForm.mobile" :readonly="isview=='1'"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-row>
-            <el-col>
-              <el-form-item label="性别：" prop="sex">
-                <el-select v-model="ruleForm.sex" placeholder="全部" :disabled="isview=='1'" class="selft-select-width" style="display: block">
-                  <el-option value="1" label="男"></el-option>
-                  <el-option value="2" label="女"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-row>
-            <el-col>
-              <el-form-item label="出生日期" prop="birthday">
-                <el-col >
-                  <el-date-picker  type="date" placeholder="请选择日期" :disabled="isview=='1'" v-model="ruleForm.birthday" @change="changeDateBir"></el-date-picker>
-                </el-col>
               </el-form-item>
             </el-col>
           </el-row>
@@ -81,22 +52,8 @@
           </el-row>
           <el-row>
             <el-col>
-              <el-form-item label="邮箱：" prop="email">
-                <el-input v-model="ruleForm.email" :readonly="isview=='1'"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col>
-              <el-form-item label="职位类型：" prop="type" >
-                <el-select filterable v-model="ruleForm.type" placeholder="无" class="selft-select-width" :disabled="isview=='1'" style="display: block">
-                  <el-option
-                    v-for="item in roleTypeArr"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
+              <el-form-item label="描述：" prop="descs">
+                <el-input v-model="ruleForm.descs" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -150,7 +107,7 @@
       var checkName = (rule, value, callback) => {
         var self = this;
         if (!value) {
-          return callback(new Error('员工名称不能为空'));
+          return callback(new Error('供应商名称不能为空'));
         }
         if (!(/^[\u4E00-\u9FA5A-Za-z0-9_]{2,50}$/.test(value))) {
           callback(new Error('请输入2~50个字符，可以是汉字、字母、数字和下划线'));
@@ -158,14 +115,14 @@
           callback();
         }
       };
-
-      var checkCode = (rule, value, callback) => {
+      var checkTel = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('员工编码不能为空'));
+          return callback(new Error('手机号码不能为空'));
         }
-        if (!(/^[\u4E00-\u9FA5A-Za-z0-9_()-（）]{2,50}/.test(value))) {
-          callback(new Error('请输入合法的员工编码，长度为2~50个字符'));
-        } else {
+        if(!/^1[3|4|5|7|8][0-9]{9}$/i.test(value)){
+          callback(new Error('请输入有效的手机号码'));
+
+        }else{
           callback();
         }
       };
@@ -173,7 +130,7 @@
       return {
         isview: this.$route.query.isview,
         addEdit: '',
-        employeeid: this.$route.query.employeeid,
+        supplierid: this.$route.query.id,
         mapDialogIsShow: false,//地图弹框
         centerPosition: [119.117, 36.710],//打开地图中心点
         isShowSearchPositioin: true,//是否显示地图的搜索框
@@ -184,12 +141,10 @@
         upfileParam: {},
         ruleForm: {
           name: '',
-          code: '',
-          idCard: '',
-          sex: '',
-          birthday: '',
+          linkman: '',
+          mobile: '',
           address: '',
-          type: '',
+          descs: '',
           latitude: 0,
           longitude: 0,
           province: '',//省
@@ -203,10 +158,11 @@
           name: [
             {validator: checkName, trigger: 'blur', required: true}
           ],
-          code: [
-            {validator: checkCode, trigger: 'change', required: true},
+          mobile: [
+            { validator: checkTel,required: true,trigger: 'blur' }
           ]
         },
+
         dialogFormVisible: false,//提醒框
         formInline: {},
         elAlertShow: false,//提示框是否可显示
@@ -220,13 +176,12 @@
       script.type = 'text/javascript'
       script.src = 'http://webapi.amap.com/maps?v=1.4.0&key=3ae9a5dc95e990f4a3508b56639cfab4&plugin=AMap.MouseTool,AMap.PolyEditor,AMap.DistrictSearch,AMap.MarkerClusterer,AMap.Autocomplete,AMap.PlaceSearch'   // 高德地图
       document.body.appendChild(script)
-      if (this.$route.query.employeeid != null) {
-        this.getEmployeeInfo();
+      if (this.$route.query.id != null) {
+        this.getSupplierInfo();
         this.addEdit = '编辑';
       } else {
         this.addEdit = '添加';
       }
-      this.getTypeSelect()
     },
     methods: {
       getLaglat(laglat) {//地图获取经纬度
@@ -244,23 +199,11 @@
           this.ruleForm.street = address.township;
         }
       },
-      getTypeSelect() {//获取职位类型
-        var self = this;
-        http.getEmployeeType(
-          response => {
-            if (response.data.rc === 200) {
-              self.roleTypeArr = response.data.data.list
-            }
-          })
-      },
-      changeDateBir(date){//日期框更改值--生日
-        this.ruleForm.birthday=date;
-      },
       submitForm(formName) {
         var self = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            if (this.$route.query.employeeid != null) {
+            if (this.$route.query.id != null) {
               self.updateData();
             } else {
               self.submitData();
@@ -273,40 +216,18 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      handleAvatarSuccess(res, file) {//图片上传成功回调
-        console.log("@@@" + this.outputObj(file))
-        console.log("@@@" + this.outputObj(res))
-        this.ruleForm.picture = res.data.filePath;
-        this.ruleForm.pictureId = res.data.id;
-      },
-      beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isPNG = file.type === 'image/png';
-        const isLtSize = file.size / 1024 / 1024 < 0.5;
 
-        if (!isJPG && !isPNG) {
-          this.$message.error('上传图片只能是 JPG/PNG 格式!');
-        }
-        if (!isLtSize) {
-          this.$message.error('上传图片大小不能超过 500KB!');
-        }
-        return (isJPG || isPNG) && isLtSize;
-      },
       submitData() {//提交数据
         var self = this;
         let params = {
           name: self.ruleForm.name,
-          code: self.ruleForm.code,
-          idCard: self.ruleForm.idCard,
+          linkman: self.ruleForm.linkman,
           mobile: self.ruleForm.mobile,
-          sex: self.ruleForm.sex,
-          birthday: self.ruleForm.birthday,
           address: self.ruleForm.address,
-          email: self.ruleForm.email,
-          roleType: self.ruleForm.type,
+          desc: self.ruleForm.descs,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.employee.addEmployee, params,
+        http.axiosPost(api.supplier.addSupplier, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -319,19 +240,15 @@
       updateData() { //提交编辑数据
         var self = this;
         let params = {
-          id: self.$route.query.employeeid,
+          id: self.$route.query.id,
           name: self.ruleForm.name,
-          code: self.ruleForm.code,
-          idCard: self.ruleForm.idCard,
+          linkman: self.ruleForm.linkman,
           mobile: self.ruleForm.mobile,
-          sex: self.ruleForm.sex,
-          birthday: self.ruleForm.birthday,
           address: self.ruleForm.address,
-          email: self.ruleForm.email,
-          roleType: self.ruleForm.type,
+          desc: self.ruleForm.descs,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.employee.modifyEmployee, params,
+        http.axiosPost(api.supplier.modifySupplier, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -345,24 +262,20 @@
             }
           })
       },
-      getEmployeeInfo() {//根据id获取员工数据
+      getSupplierInfo() {//根据id获取供应商数据
         var self = this;
         var params = {
-          id: self.$route.query.employeeid
+          id: self.$route.query.id
         }
-        http.axiosGet(api.employee.getEmployeeDetail, params,
+        http.axiosGet(api.supplier.getById, params,
           response => {
             if (response.data.rc === 200) {
               var resData = response.data.data;
               self.ruleForm.name = resData.name;
-              self.ruleForm.code = resData.code;
-              self.ruleForm.idCard = resData.idcard;
+              self.ruleForm.linkman = resData.code;
               self.ruleForm.mobile = resData.mobile;
-              self.ruleForm.sex = resData.sexStr;
-              self.ruleForm.birthday = resData.birthdayStr;
+              self.ruleForm.descs = resData.descs;
               self.ruleForm.address = resData.address;
-              self.ruleForm.email = resData.email;
-              self.ruleForm.type = resData.type;
               self.editData = resData;
             } else {
               self.controlElAlert('请求数据失败，刷新重试', 'warning');

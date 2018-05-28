@@ -67,6 +67,11 @@ var routes = [
         component: resolve => require(['@/page/purchase/supplier'], resolve)
       }, // 供应商管理
       {
+        path: '/purchase/addSupplier',
+        meta: {requireAuth: true, showCopyRight: true},
+        component: resolve => require(['@/page/purchase/addSupplier'], resolve)
+      }, // 添加供应商
+      {
         path: '/sales/customer',
         meta: {requireAuth: true, showCopyRight: true},
         component: resolve => require(['@/page/sales/customer'], resolve)

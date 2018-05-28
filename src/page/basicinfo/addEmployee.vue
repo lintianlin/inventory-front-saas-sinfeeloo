@@ -169,6 +169,17 @@
           callback();
         }
       };
+      var checkTel = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('手机号码不能为空'));
+        }
+        if(!/^1[3|4|5|7|8][0-9]{9}$/i.test(value)){
+          callback(new Error('请输入有效的手机号码'));
+
+        }else{
+          callback();
+        }
+      };
 
       return {
         isview: this.$route.query.isview,

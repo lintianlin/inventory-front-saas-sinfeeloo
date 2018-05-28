@@ -26,7 +26,8 @@ export default {
     addParam: 'param/addParam', // 添加参数
     modifyParam: 'param/modifyParam',// 修改参数
     deleteParam: 'param/deleteParam', // 删除参数
-    getParamTypeList: 'param/getParamTypeList' // 获取参数类型
+    getParamTypeList: 'param/getParamTypeList', // 获取参数类型
+    getById: 'param/getById' // 获取参数详情
   },
   user: {// 用户管理
     modifyPassword: 'user/modifyPassword',// 修改密码

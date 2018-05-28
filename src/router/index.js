@@ -52,6 +52,11 @@ var routes = [
         component: resolve => require(['@/page/basicinfo/addEmployee'], resolve)
       }, // 添加仓库
       {
+        path: '/basicinfo/addParam',
+        meta: {requireAuth: true, showCopyRight: true},
+        component: resolve => require(['@/page/basicinfo/addParam'], resolve)
+      },//添加参数
+      {
         path: '/purchase/purchaseOrder',
         meta: {requireAuth: true, showCopyRight: true},
         component: resolve => require(['@/page/purchase/purchaseOrder'], resolve)

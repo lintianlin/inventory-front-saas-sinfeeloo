@@ -22,15 +22,15 @@
                   </el-form-item>
 
                   <el-form-item label="参数类型：">
-                    <el-select class="self-select" filterable v-model="formInline.typeid"
+                    <el-select class="self-select" filterable v-model="formInline.parentId"
                                placeholder="全部" size="small"
                                @change="getData()">
                       <el-option label="全部" value="全部"></el-option>
                       <el-option
                         v-for="item in paramTypeArr"
-                        :key="item.typeid"
-                        :label="item.typename"
-                        :value="item.typeid">
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
                       </el-option>
                     </el-select>
                   </el-form-item>
@@ -77,15 +77,6 @@
                   </template>
                 </el-table-column>
 
-                <el-table-column
-                  prop="typename"
-                  label="参数类型"
-                  min-width="50"
-                >
-                  <template slot-scope="scope">
-                    <span class="text-grey"> {{ scope.row.typename }}</span>
-                  </template>
-                </el-table-column>
                 <el-table-column
                   prop="descs"
                   label="描述"
@@ -165,7 +156,7 @@
         paramTypeArr: [], // 商品品类下拉框
         formInline: {
           name: '',
-          typeid: ''
+          parentId: ''
         },
         elAlertShow: false, // 提示框是否可显示
         elAlertTitle: 'fqwefq', // 提示框文字
@@ -176,7 +167,7 @@
         dialogVisible2: false, // 表头设置
         ruleForm: {
           name: '',
-          description: ''
+          parentId: ''
         },
         rules: {},
         sels: [],
@@ -206,7 +197,7 @@
           page: this.pageIdx,
           limit: this.pageSize,
           name: this.formInline.name,
-          typeId: this.formInline.typeid === '全部' ? '' : this.formInline.typeid
+          parentId: this.formInline.parentId === '全部' ? '' : this.formInline.parentId
         }
         http.axiosGet(api.param.getParamListByPage, params,
           response => {
@@ -266,7 +257,7 @@
           page: this.pageIdx,
           limit: this.pageSize,
           name: this.formInline.name,
-          typeId: this.formInline.typeid === '全部' ? '' : this.formInline.typeid
+          parentId: this.formInline.parentId === '全部' ? '' : this.formInline.parentId
         }
         localStorage.pageParam = JSON.stringify(pageParam);
       },
@@ -278,7 +269,7 @@
             this.pageIdx = pageParam.page;
             this.pageSize = pageParam.limit;
             this.formInline.name = pageParam.name;
-            this.formInline.typeid = pageParam.typeId;
+            this.formInline.parentId = pageParam.parentId;
           }
         }
       },
@@ -306,7 +297,7 @@
       resetData() {//重置查询条件
         this.loading = true;
         this.formInline.name = '';
-        this.formInline.typeid = '';
+        this.formInline.parentId = '';
         this.getData();
       },
       handleCurrentChangeDialog(val) {//分页

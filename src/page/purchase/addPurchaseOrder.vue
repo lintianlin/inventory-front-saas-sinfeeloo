@@ -4,8 +4,8 @@
       <div class="header-content">
         <div class="pageTitle">
           <i class="bg-theme"></i>
-          <span v-if="isview=='0'">{{addEdit}}供应商</span>
-          <span v-if="isview=='1'">供应商详情</span>
+          <span v-if="isview=='0'">{{addEdit}}采购订单</span>
+          <span v-if="isview=='1'">采购订单详情</span>
         </div>
         <div class="refresh">
           <el-button @click.native="goBack()" class="btn-border"><i class="el-icon-arrow-left"></i> 返回</el-button>
@@ -18,46 +18,17 @@
                  class="demo-ruleForm cover-form-style">
           <el-row>
             <el-col>
-              <el-form-item label="供应商名称：" prop="name">
-                <el-input v-model="ruleForm.name" :readonly="isview=='1'"></el-input>
+              <el-form-item label="商品名称：" prop="goodsName">
+                <el-input
+                  placeholder="请选择采购商品"
+                  suffix-icon="el-icon-search"
+                  readonly
+                  @focus="selectGoods"
+                  v-model="ruleForm.goodsName">
+                </el-input>
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
-            <el-col>
-              <el-form-item label="联系人：" prop="linkman">
-                <el-input v-model="ruleForm.linkman" :readonly="isview=='1'"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-row>
-            <el-col>
-              <el-form-item label="联系电话：" prop="mobile">
-                <el-input v-model="ruleForm.mobile" :readonly="isview=='1'"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-row>
-            <el-col>
-              <el-form-item label="地址：" prop="address">
-                <el-input v-model="ruleForm.address" :readonly="isview=='1'" placeholder="点击右侧按钮选择地址"></el-input>
-                <el-tooltip class="item" effect="dark" content="点击打开地图选择地址" placement="right-start">
-                  <el-button type="primary" class="setPosition-customerAdd" :disabled ="isview=='1'" @click="mapDialogIsShow=!mapDialogIsShow"><i
-                    class="eliconfont elicon-position"></i></el-button>
-                </el-tooltip>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col>
-              <el-form-item label="描述：" prop="descs">
-                <el-input v-model="ruleForm.descs" :readonly="isview=='1'"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
           <el-row>
             <el-col v-if="isview=='0'">
               <el-form-item class="control-primary">
@@ -77,19 +48,135 @@
               :closable="false"
               show-icon>
     </el-alert>
-    <div class="mapDialog-mask" v-if="mapDialogIsShow" @click="mapDialogIsShow=!mapDialogIsShow">
-      <div class="mapDialog" @click="mapDialogIsShow=!mapDialogIsShow">
-        <div class="mapDialog-top"><i class="el-icon-close" @click="mapDialogIsShow=!mapDialogIsShow"></i></div>
-        <amap class="smallAmap"
-              :centerPos="centerPosition"
-              :latitudePos="ruleForm.latitude"
-              :longitudePos="ruleForm.longitude"
-              :isShowSearchPositioin="isShowSearchPositioin"
-              v-on:laglatChange="getLaglat"
-              v-on:addressChange="getAddress"
-              v-on:regionDivide="getRegion"></amap>
+    选择商品
+    <el-dialog title="选择商品" :visible.sync="dialogImportGoods" size="large" custom-class="productDialog"
+               :modal-append-to-body="false" class="dialogTitle">
+      <div class="el-table-diy filterQuery">
+        <el-row class="table-header">
+          <el-col :span="21" class="header-title">
+            <i class="el-icon-search"></i>
+            筛选查询
+          </el-col>
+          <el-col :span="3" class="text-r">
+            <el-button type="primary" class="btn-normal self-btn-blue" @click="getDataDialog()">查询结果
+            </el-button>
+          </el-col>
+        </el-row>
+        <el-row class="table-content collapse-el text-l p-l-20">
+          <el-form :inline="true" :model="formInline2" class="demo-form-inline" style="margin-top: 20px">
+            <el-form-item label="输入搜索">
+              <el-input v-model="formInline2.goodsName" placeholder="商品名称"
+                        style="width: 198px" size="small"></el-input>
+            </el-form-item>
+            <el-form-item label="商品品牌">
+              <el-select filterable v-model="formInline2.brandId" placeholder="全部"
+                         @change="getDataDialog()" size="small">
+                <el-option label="全部" value="全部"></el-option>
+                <el-option
+                  v-for="item in brandArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="品类：">
+              <el-select class="self-select" filterable v-model="formInline2.typeId"
+                         placeholder="全部" size="small"
+                         @change="getDataDialog()">
+                <el-option label="全部" value="全部"></el-option>
+                <el-option
+                  v-for="item in goodsTypeArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </el-row>
       </div>
-    </div>
+      <div class="el-table-diy box-content">
+        <el-row class="table-header">
+          <el-col :span="8" class="header-title">
+            <i class="eliconfont elicon-list"></i>
+            数据列表
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-table
+            :data="dialogTableData"
+            border
+            style="width: 100%"
+            highlight-current-row
+            @current-change="handleCurrentChange"
+            ref="goodsTable"
+          >
+            <el-table-column
+              label="序号"
+              width="120">
+              <template slot-scope="scope">
+                <span class="text-grey"> {{ scope.$index + 1}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="商品主图"
+              width="120">
+              <template slot-scope="scope">
+                <img v-if="scope.row.pictureUrl"
+                     height="50"
+                     width="50"
+                     :src="'http://192.168.30.47:8087'+scope.row.pictureUrl+'?x-oss-process=image/resize,m_fill,h_50,w_50'"
+                     alt="logo">
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="商品名称"
+              min-width="120">
+              <template slot-scope="scope">
+                <span class="text-grey"> {{ scope.row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="brandName"
+              label="品牌"
+              width="100">
+              <template slot-scope="scope">
+                <span class="text-grey"> {{ scope.row.brandName }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="typeName"
+              label="品类"
+              width="120">
+              <template slot-scope="scope">
+                <span class="text-grey"> {{ scope.row.typeName }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="standard"
+              label="规格"
+              width="100">
+              <template slot-scope="scope">
+                <span class="text-grey"> {{ scope.row.standard }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-row>
+        <div class="pageContent">
+          <div></div>
+          <el-pagination
+            @current-change="handleCurrentChange2"
+            @size-change="handleSizeChange2"
+            :current-page="pageIdx2"
+            :page-size="pageSize2"
+            layout="total, prev, pager, next,jumper"
+            :total="totalPage2">
+          </el-pagination>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -97,17 +184,14 @@
   import api from '@/fetch/api'
   import tools from '@/fetch/tools'
   import http from '@/fetch/http'
-  import gdmap from '@/components/map/mapAdd.vue'
 
   export default {
-    components: {
-      'amap': gdmap
-    },
+    components: {},
     data() {
       var checkName = (rule, value, callback) => {
         var self = this;
         if (!value) {
-          return callback(new Error('供应商名称不能为空'));
+          return callback(new Error('采购订单名称不能为空'));
         }
         if (!(/^[\u4E00-\u9FA5A-Za-z0-9_]{2,50}$/.test(value))) {
           callback(new Error('请输入2~50个字符，可以是汉字、字母、数字和下划线'));
@@ -115,67 +199,47 @@
           callback();
         }
       };
-      var checkTel = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error('手机号码不能为空'));
-        }
-        if(!/^1[3|4|5|7|8][0-9]{9}$/i.test(value)){
-          callback(new Error('请输入有效的手机号码'));
-
-        }else{
-          callback();
-        }
-      };
 
       return {
         isview: this.$route.query.isview,
         addEdit: '',
-        supplierid: this.$route.query.id,
-        mapDialogIsShow: false,//地图弹框
-        centerPosition: [119.117, 36.710],//打开地图中心点
-        isShowSearchPositioin: true,//是否显示地图的搜索框
-        upFileUrl: api.pic.uploadPhoto,//客户图片上传 URL
+        orderid: this.$route.query.id,
         headers: {
           token: localStorage.token
         },//token
-        upfileParam: {},
         ruleForm: {
-          name: '',
-          linkman: '',
-          mobile: '',
-          address: '',
-          descs: '',
-          latitude: 0,
-          longitude: 0,
-          province: '',//省
-          city: '',//市
-          district: '',//区
-          street: '',//街道
+          goodsId: '',
+          goodsName: '',
+
+        },
+        formInline2: {
+          goodsName: '',
+          typeId: '',
+          brandId: ''
         },
         editData: '',
-        roleTypeArr: [],
+        dialogTableData: [],//商品选择框数据
+        brandArr: [], // 商品品牌下拉框
+        goodsTypeArr: [], // 商品品类下拉框
+        pageIdx2: 1,//当前页
+        pageSize2: 20,
+        totalPage2: 0,//总条数
+        currentRow: '',
         rules: {
           name: [
             {validator: checkName, trigger: 'blur', required: true}
-          ],
-          mobile: [
-            { validator: checkTel,required: true,trigger: 'blur' }
           ]
         },
 
         dialogFormVisible: false,//提醒框
-        formInline: {},
         elAlertShow: false,//提示框是否可显示
         elAlertTitle: 'fqwefq',//提示框文字
         elAlertType: 'success',//提示框类型
+        dialogImportGoods: false,//导入商品
 
       }
     },
     mounted() {
-      var script = document.createElement('script')
-      script.type = 'text/javascript'
-      script.src = 'http://webapi.amap.com/maps?v=1.4.0&key=3ae9a5dc95e990f4a3508b56639cfab4&plugin=AMap.MouseTool,AMap.PolyEditor,AMap.DistrictSearch,AMap.MarkerClusterer,AMap.Autocomplete,AMap.PlaceSearch'   // 高德地图
-      document.body.appendChild(script)
       if (this.$route.query.id != null) {
         this.getSupplierInfo();
         this.addEdit = '编辑';
@@ -184,21 +248,6 @@
       }
     },
     methods: {
-      getLaglat(laglat) {//地图获取经纬度
-        this.ruleForm.longitude = laglat.lng;
-        this.ruleForm.latitude = laglat.lat;
-      },
-      getAddress(address) {//地图获取地址
-        this.ruleForm.address = address;
-      },
-      getRegion(address) {//地图获取区域划分
-        if (address) {
-          this.ruleForm.province = address.province;
-          this.ruleForm.city = address.city;
-          this.ruleForm.district = address.district;
-          this.ruleForm.street = address.township;
-        }
-      },
       submitForm(formName) {
         var self = this;
         this.$refs[formName].validate((valid) => {
@@ -216,7 +265,6 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-
       submitData() {//提交数据
         var self = this;
         let params = {
@@ -254,15 +302,15 @@
               self.controlElAlert('操作成功', 'success');
               self.$router.back();
             } else {
-              if(response.data.des==''){
+              if (response.data.des == '') {
                 self.controlElAlert('操作失败，请重新提交', 'warning');
-              }else{
+              } else {
                 self.controlElAlert(response.data.des, 'warning');
               }
             }
           })
       },
-      getSupplierInfo() {//根据id获取供应商数据
+      getSupplierInfo() {//根据id获取采购订单数据
         var self = this;
         var params = {
           id: self.$route.query.id
@@ -282,6 +330,33 @@
             }
           });
       },
+      selectGoods() {//选择商品
+        console.log("点击了我！")
+        this.dialogImportGoods = true;
+        this.formInline2.typeId = '';
+        this.getDataDialog();
+      },
+       getDataDialog() {//获取导入商品
+        var self = this
+        let params = {
+          page: this.pageIdx2,
+          limit: this.pageSize2,
+          goodsName: this.formInline2.goodsName,
+          typeId: this.formInline2.typeId === '全部' ? '' : this.formInline2.typeId, // 品类
+          brandId: this.formInline2.brandId === '全部' ? '' : this.formInline2.brandId, // 品牌
+        }
+        http.axiosGet(api.goods.getGoodsListByPage, params,
+          response => {
+            self.loading = false
+            localStorage.removeItem('pageParam')
+            if (response.data.rc === 200) {
+              self.dialogTableData = response.data.data.list
+              self.totalPage2 = response.data.data.total
+            } else {
+              self.controlElAlert('获取数据失败', 'error')
+            }
+          })
+      },
       controlElAlert(text, type) {//控制提示框
         var self = this;
         self.elAlertShow = true;
@@ -294,12 +369,39 @@
       goBack() {
         this.$router.back();
       },
+      handleCurrentChange(val) {
+        var self = this;
+        console.log('商品id：'+val.id+'   商品名称：'+val.name)
+        self.ruleForm.goodsId = val.id;
+        self.ruleForm.goodsName = val.name;
+        self.dialogImportGoods = false;
+      },
+      handleCurrentChange2(val) {
+        this.loading = true;
+        this.pageIdx2 = val;
+        this.getDataDialog();
+      },
+      handleSizeChange2(val) {
+        this.loading = true;
+        this.pageSize2 = val;
+        this.getDataDialog();
+      },
       outputObj(obj) {
         var description = "";
         for (var i in obj) {
           description += i + " = " + obj[i] + "\n";
         }
         return description
+      }
+    },
+    watch: {
+      'dialogImportGoods': function (val, oldVal) {
+        if (!val) {
+          this.formInline2.goodsName = ''
+          this.formInline2.brandId = ''
+          this.formInline2.typeId = ''
+        }
+
       }
     }
   }

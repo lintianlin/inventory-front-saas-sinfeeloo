@@ -302,11 +302,6 @@
           standard: '',
           material: ''
         },
-        formInline2: {
-          goodsName: '',
-          typeId: [],
-          brandId: ''
-        },
         multipleSelection: [], // 选中的值
         optionsLot: [ // 批量操作
           {label: '商品上架', value: '1'},

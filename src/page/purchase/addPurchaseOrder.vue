@@ -331,7 +331,6 @@
           });
       },
       selectGoods() {//选择商品
-        console.log("点击了我！")
         this.dialogImportGoods = true;
         this.formInline2.typeId = '';
         this.getDataDialog();
@@ -371,10 +370,12 @@
       },
       handleCurrentChange(val) {
         var self = this;
-        console.log('商品id：'+val.id+'   商品名称：'+val.name)
-        self.ruleForm.goodsId = val.id;
-        self.ruleForm.goodsName = val.name;
-        self.dialogImportGoods = false;
+        if(null!=val){
+          self.ruleForm.goodsId = val.id;
+          self.ruleForm.goodsName = val.name;
+          self.dialogImportGoods = false;
+        }
+
       },
       handleCurrentChange2(val) {
         this.loading = true;

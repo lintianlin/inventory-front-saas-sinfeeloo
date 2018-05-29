@@ -18,7 +18,7 @@
                  class="demo-ruleForm cover-form-style">
           <el-row>
             <el-col>
-              <el-form-item label="商品名称：" prop="goodsName">
+              <el-form-item label="采购商品名称：" prop="goodsName">
                 <el-input
                   placeholder="请选择采购商品"
                   suffix-icon="el-icon-search"
@@ -29,6 +29,23 @@
               </el-form-item>
             </el-col>
           </el-row>
+
+          <el-row>
+            <el-col>
+              <el-form-item label="供应商名称：" prop="supplierId">
+                <el-select filterable v-model="ruleForm.supplierId" placeholder="全部" :disabled="isview=='1'" class="selft-select-width"
+                           style="display: block">
+                  <el-option
+                    v-for="item in supplierArr"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
           <el-row>
             <el-col v-if="isview=='0'">
               <el-form-item class="control-primary">
@@ -207,12 +224,22 @@
         headers: {
           token: localStorage.token
         },//token
-        ruleForm: {
+        supplierArr:[],//供应商
+        respoArr:[],//仓库
+        operatorArr:[],//业务员
+        ruleForm: {//添加订单的表单
           goodsId: '',
           goodsName: '',
-
+          supplierId: '',
+          respId: '',
+          type: '',
+          count: '',
+          unitPirce: '',
+          totalPrice: '',
+          operatorId: '',
+          descs: '',
         },
-        formInline2: {
+        formInline2: {//商品选择页面的表单
           goodsName: '',
           typeId: '',
           brandId: ''
@@ -240,8 +267,9 @@
       }
     },
     mounted() {
+      this.getSupplierSelect()
       if (this.$route.query.id != null) {
-        this.getSupplierInfo();
+        this.getSupplierInfo()
         this.addEdit = '编辑';
       } else {
         this.addEdit = '添加';
@@ -307,6 +335,23 @@
               } else {
                 self.controlElAlert(response.data.des, 'warning');
               }
+            }
+          })
+      },
+      getSupplierSelect(){
+        var self = this
+        let params = {
+          page: 1,
+          limit: 20,
+        }
+        http.axiosGet(api.supplier.getSupplierListByPage, params,
+          response => {
+            self.loading = false
+            localStorage.removeItem('pageParam')
+            if (response.data.rc === 200) {
+              self.supplierArr = response.data.data.list
+            } else {
+              self.controlElAlert('获取数据失败', 'error')
             }
           })
       },

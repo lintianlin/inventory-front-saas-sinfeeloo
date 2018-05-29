@@ -62,6 +62,11 @@ var routes = [
         component: resolve => require(['@/page/purchase/purchaseOrder'], resolve)
       }, // 采购单
       {
+        path: '/purchase/addPurchaseOrder',
+        meta: {requireAuth: true, showCopyRight: true},
+        component: resolve => require(['@/page/purchase/addPurchaseOrder'], resolve)
+      }, // 添加采购单
+      {
         path: '/purchase/supplier',
         meta: {requireAuth: true, showCopyRight: true},
         component: resolve => require(['@/page/purchase/supplier'], resolve)

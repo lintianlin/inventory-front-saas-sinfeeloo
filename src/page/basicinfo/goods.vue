@@ -544,6 +544,9 @@
         this.dialogFormVisible = true;
         this.showUrl = 'http://192.168.30.47:8087' + url + '?x-oss-process=image/resize,m_fill,h_50,w_50'
       },
+      changePackup() {//收起折叠搜索面板
+        this.packupSearch = !this.packupSearch;
+      },
     }
   }
 </script>

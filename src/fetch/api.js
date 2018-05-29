@@ -52,6 +52,15 @@ export default {
     deleteSupplier:'supplier/deleteSupplier',
     getById:'supplier/getById'
   },
+  purchaseOrder:{
+    add:'purchaseOrder/add',
+    getOrderListByPage:'purchaseOrder/getOrderListByPage',
+    modify:'purchaseOrder/modify',
+    delete:'purchaseOrder/delete',
+    getById:'purchaseOrder/getById',
+    getCheckOrderListByPage:'purchaseOrder/getCheckOrderListByPage',
+    check:'purchaseOrder/check',
+  },
   menu: {// 菜单管理
     getPermissionWithMenuList: '/menu/getMenuList'// 获取用户权限对应的菜单列表
   },

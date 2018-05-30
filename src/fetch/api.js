@@ -68,6 +68,15 @@ export default {
     delete: 'customer/delete',
     getById: 'customer/getById',
   },
+  salesOrder:{
+    add:'salesOrder/add',
+    getOrderListByPage:'salesOrder/getOrderListByPage',
+    modify:'salesOrder/modify',
+    delete:'salesOrder/delete',
+    getById:'salesOrder/getById',
+    check:'salesOrder/check',
+    getCheckOrderListByPage:'salesOrder/getCheckOrderListByPage',
+  },
   menu: {// 菜单管理
     getPermissionWithMenuList: '/menu/getMenuList'// 获取用户权限对应的菜单列表
   },

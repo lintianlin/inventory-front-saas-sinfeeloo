@@ -395,19 +395,19 @@
       },
       formBuy() {//添加销售单
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addSalesOrder?isview=0&ordertype=1'})
+        this.$router.push({path: '/sales/addSalesOrder?isview=0&ordertype=1'})
       },
       formRefund() {//添加退货单
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addSalesOrder?isview=0&ordertype=2'})
+        this.$router.push({path: '/sales/addSalesOrder?isview=0&ordertype=2'})
       },
       formView(id,type) {//查看订单详情
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addSalesOrder?id=' + id + '&isview=1&ordertype='+type})
+        this.$router.push({path: '/sales/addSalesOrder?id=' + id + '&isview=1&ordertype='+type})
       },
       formEdit(id,type) {//修改
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addSalesOrder?id=' + id + '&isview=0&ordertype='+type})
+        this.$router.push({path: '/sales/addSalesOrder?id=' + id + '&isview=0&ordertype='+type})
       },
       formDelete(id) {//删除
         var self = this;

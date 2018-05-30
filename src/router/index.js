@@ -92,6 +92,11 @@ var routes = [
         component: resolve => require(['@/page/sales/salesOrder'], resolve)
       }, // 销售订单
       {
+        path: '/sales/addSalesOrder',
+        meta: {requireAuth: true, showCopyRight: true},
+        component: resolve => require(['@/page/sales/addSalesOrder'], resolve)
+      }, // 添加销售订单
+      {
         path: '/stock/inventoryLook',
         meta: {requireAuth: true, showCopyRight: true},
         component: resolve => require(['@/page/stock/inventoryLook'], resolve)

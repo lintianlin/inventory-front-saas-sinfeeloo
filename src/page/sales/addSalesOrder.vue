@@ -4,8 +4,8 @@
       <div class="header-content">
         <div class="pageTitle">
           <i class="bg-theme"></i>
-          <span v-if="isview=='0'&&ordertype==1">{{addEdit}}采购订单</span>
-          <span v-if="isview=='1'&&ordertype==1">采购订单详情</span>
+          <span v-if="isview=='0'&&ordertype==1">{{addEdit}}销售订单</span>
+          <span v-if="isview=='1'&&ordertype==1">销售订单详情</span>
           <span v-if="isview=='0'&&ordertype==2">{{addEdit}}退货订单</span>
           <span v-if="isview=='1'&&ordertype==2">退货订单详情</span>
         </div>
@@ -35,12 +35,12 @@
 
           <el-row>
             <el-col>
-              <el-form-item label="供应商名称：" prop="supplierId">
-                <el-select filterable v-model="ruleForm.supplierId" placeholder="全部" :disabled="isview=='1'"
+              <el-form-item label="客户名称：" prop="supplierId">
+                <el-select filterable v-model="ruleForm.customerId" placeholder="全部" :disabled="isview=='1'"
                            class="selft-select-width"
                            style="display: block">
                   <el-option
-                    v-for="item in supplierArr"
+                    v-for="item in customerArr"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id">
@@ -282,7 +282,7 @@
       var checkName = (rule, value, callback) => {
         var self = this;
         if (!value) {
-          return callback(new Error('采购订单名称不能为空'));
+          return callback(new Error('销售订单名称不能为空'));
         }
         if (!(/^[\u4E00-\u9FA5A-Za-z0-9_]{2,50}$/.test(value))) {
           callback(new Error('请输入2~50个字符，可以是汉字、字母、数字和下划线'));
@@ -332,13 +332,13 @@
         headers: {
           token: localStorage.token
         },//token
-        supplierArr: [],//供应商
+        customerArr: [],//客户
         respoArr: [],//仓库
         operatorArr: [],//业务员
         ruleForm: {//添加订单的表单
           goodsId: '',
           goodsName: '',
-          supplierId: '',
+          customerId: '',
           respId: '',
           type: this.$route.query.ordertype,
           count: '',
@@ -385,19 +385,18 @@
     },
     mounted() {
       if(this.$route.query.isview=='1'){
-        this.getPurchaseOrderInfo()
+        this.getSalesOrderInfo()
       }else{
-        this.getSupplierSelect()
+        this.getCustomerSelect()
         this.getRespoSelect()
         this.getOperatorSelect()
         if (this.$route.query.id != null) {
-          this.getPurchaseOrderInfo()
+          this.getSalesOrderInfo()
           this.addEdit = '编辑';
         } else {
           this.addEdit = '添加';
         }
       }
-
     },
     methods: {
       submitForm(formName) {
@@ -422,7 +421,7 @@
         let params = {
           goodsId: self.ruleForm.goodsId,
           goodsName: self.ruleForm.goodsName,
-          supplierId: self.ruleForm.supplierId,
+          customerId: self.ruleForm.customerId,
           respId: self.ruleForm.respId,
           type: self.ruleForm.type,
           count: self.ruleForm.count,
@@ -432,7 +431,7 @@
           descs: self.ruleForm.descs,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.purchaseOrder.add, params,
+        http.axiosPost(api.salesOrder.add, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -448,7 +447,7 @@
           id: self.$route.query.id,
           goodsId: self.ruleForm.goodsId,
           goodsName: self.ruleForm.goodsName,
-          supplierId: self.ruleForm.supplierId,
+          customerId: self.ruleForm.customerId,
           respId: self.ruleForm.respId,
           type: self.ruleForm.type,
           count: self.ruleForm.count,
@@ -458,7 +457,7 @@
           descs: self.ruleForm.descs,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.purchaseOrder.modify, params,
+        http.axiosPost(api.salesOrder.modify, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -472,18 +471,18 @@
             }
           })
       },
-      getSupplierSelect() {//获取供应商列表
+      getCustomerSelect() {//获取客户列表
         var self = this
         let params = {
           page: 1,
           limit: 20,
         }
-        http.axiosGet(api.supplier.getSupplierListByPage, params,
+        http.axiosGet(api.customer.getCustomerListByPage, params,
           response => {
             self.loading = false
             localStorage.removeItem('pageParam')
             if (response.data.rc === 200) {
-              self.supplierArr = response.data.data.list
+              self.customerArr = response.data.data.list
             } else {
               self.controlElAlert('获取数据失败', 'error')
             }
@@ -523,18 +522,18 @@
             }
           })
       },
-      getPurchaseOrderInfo() {//根据id获取采购订单数据
+      getSalesOrderInfo() {//根据id获取销售订单数据
         var self = this;
         var params = {
           id: self.$route.query.id
         }
-        http.axiosGet(api.purchaseOrder.getById, params,
+        http.axiosGet(api.salesOrder.getById, params,
           response => {
             if (response.data.rc === 200) {
               var resData = response.data.data;
               self.ruleForm.goodsId = resData.goodsid;
               self.ruleForm.goodsName = resData.goodsName;
-              self.ruleForm.supplierId = resData.supplierid;
+              self.ruleForm.customerId = resData.customerid;
               self.ruleForm.respId = resData.repoid;
               self.ruleForm.type = resData.type;
               self.ruleForm.count = resData.count;

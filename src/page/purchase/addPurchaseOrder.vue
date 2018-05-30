@@ -1,11 +1,13 @@
 <template>
-  <div id="app" class="self-main customerAdd">
+  <div id="app" class="self-main purchaseOrder">
     <header class="page-header">
       <div class="header-content">
         <div class="pageTitle">
           <i class="bg-theme"></i>
-          <span v-if="isview=='0'">{{addEdit}}采购订单</span>
-          <span v-if="isview=='1'">采购订单详情</span>
+          <span v-if="isview=='0'&&ordertype==1">{{addEdit}}采购订单</span>
+          <span v-if="isview=='1'&&ordertype==1">采购订单详情</span>
+          <span v-if="isview=='0'&&ordertype==2">{{addEdit}}退货订单</span>
+          <span v-if="isview=='1'&&ordertype==2">退货订单详情</span>
         </div>
         <div class="refresh">
           <el-button @click.native="goBack()" class="btn-border"><i class="el-icon-arrow-left"></i> 返回</el-button>
@@ -33,7 +35,8 @@
           <el-row>
             <el-col>
               <el-form-item label="供应商名称：" prop="supplierId">
-                <el-select filterable v-model="ruleForm.supplierId" placeholder="全部" :disabled="isview=='1'" class="selft-select-width"
+                <el-select filterable v-model="ruleForm.supplierId" placeholder="全部" :disabled="isview=='1'"
+                           class="selft-select-width"
                            style="display: block">
                   <el-option
                     v-for="item in supplierArr"
@@ -47,6 +50,76 @@
           </el-row>
 
           <el-row>
+            <el-col>
+              <el-form-item label="仓库名称：" prop="respId">
+                <el-select filterable v-model="ruleForm.respId" placeholder="全部" :disabled="isview=='1'"
+                           class="selft-select-width"
+                           style="display: block">
+                  <el-option
+                    v-for="item in respoArr"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col>
+              <el-form-item label="数量：" prop="count">
+                <el-input v-model="ruleForm.count" :maxlength="6" @change="countChangeTotalPrice(ruleForm.count)"
+                          placeholder="请输入整数"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col>
+              <el-form-item label="商品单价：" prop="unitPirce" style="width: 410px" >
+                <el-input v-model="ruleForm.unitPirce" @change="unitPriceChangeTotalPrice(ruleForm.unitPirce)"></el-input>
+                <span class="gray">元</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col>
+              <el-form-item label="商品总价：" prop="totalPrice" style="width: 410px">
+                <el-input v-model="ruleForm.totalPrice"></el-input>
+                <span class="gray">元</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col>
+              <el-form-item label="业务员：" prop="operatorId">
+                <el-select filterable v-model="ruleForm.operatorId" placeholder="全部" :disabled="isview=='1'"
+                           class="selft-select-width"
+                           style="display: block">
+                  <el-option
+                    v-for="item in operatorArr"
+                    :key="item.id"
+                    :label="item.name+' '+item.mobile"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col>
+              <el-form-item label="描述" prop="descs">
+                <el-input type="textarea" :rows="3" v-model="ruleForm.descs" :readonly="isview=='1'" placeholder="请输入内容"
+                          style="width: 250px"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row class="m-t-20">
             <el-col v-if="isview=='0'">
               <el-form-item class="control-primary">
                 <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
@@ -65,7 +138,6 @@
               :closable="false"
               show-icon>
     </el-alert>
-    选择商品
     <el-dialog title="选择商品" :visible.sync="dialogImportGoods" size="large" custom-class="productDialog"
                :modal-append-to-body="false" class="dialogTitle">
       <div class="el-table-diy filterQuery">
@@ -216,23 +288,57 @@
           callback();
         }
       };
+      var checkCount = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('数量不能为空'));
+        }
+        var r = /^\+?[1-9][0-9]*$/;//正整数
+        if (!r.test(value)) {
+          callback(new Error('请输入正整数'));
+        } else {
+          callback();
+        }
+      };
+      var checkUnitPirce = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('商品单价不能为空'));
+        }
+        if (!(/^\d+(\.\d*)?$|^\.\d+$/.test(value))) {
+          callback(new Error('请输入1~20位数字,可以是整数或小数'));
+
+        } else {
+          callback();
+        }
+      };
+      var checkTotalPrice = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('商品总价不能为空'));
+        }
+        if (!(/^\d+(\.\d*)?$|^\.\d+$/.test(value))) {
+          callback(new Error('请输入1~20位数字,可以是整数或小数'));
+        } else {
+          callback();
+        }
+      };
+
 
       return {
         isview: this.$route.query.isview,
+        ordertype: this.$route.query.ordertype,
         addEdit: '',
         orderid: this.$route.query.id,
         headers: {
           token: localStorage.token
         },//token
-        supplierArr:[],//供应商
-        respoArr:[],//仓库
-        operatorArr:[],//业务员
+        supplierArr: [],//供应商
+        respoArr: [],//仓库
+        operatorArr: [],//业务员
         ruleForm: {//添加订单的表单
           goodsId: '',
           goodsName: '',
           supplierId: '',
           respId: '',
-          type: '',
+          type: this.$route.query.ordertype,
           count: '',
           unitPirce: '',
           totalPrice: '',
@@ -255,6 +361,15 @@
         rules: {
           name: [
             {validator: checkName, trigger: 'blur', required: true}
+          ],
+          count: [
+            {validator: checkCount, required: true, trigger: 'blur'}
+          ],
+          unitPirce: [
+            {validator: checkUnitPirce, required: true, trigger: 'blur'}
+          ],
+          totalPrice: [
+            {validator: checkTotalPrice, required: true, trigger: 'blur'}
           ]
         },
 
@@ -268,8 +383,10 @@
     },
     mounted() {
       this.getSupplierSelect()
+      this.getRespoSelect()
+      this.getOperatorSelect()
       if (this.$route.query.id != null) {
-        this.getSupplierInfo()
+        this.getPurchaseOrderInfo()
         this.addEdit = '编辑';
       } else {
         this.addEdit = '添加';
@@ -296,14 +413,19 @@
       submitData() {//提交数据
         var self = this;
         let params = {
-          name: self.ruleForm.name,
-          linkman: self.ruleForm.linkman,
-          mobile: self.ruleForm.mobile,
-          address: self.ruleForm.address,
-          desc: self.ruleForm.descs,
+          goodsId: self.ruleForm.goodsId,
+          goodsName: self.ruleForm.goodsName,
+          supplierId: self.ruleForm.supplierId,
+          respId: self.ruleForm.respId,
+          type: self.ruleForm.type,
+          count: self.ruleForm.count,
+          unitPirce: self.ruleForm.unitPirce,
+          totalPrice: self.ruleForm.totalPrice,
+          operatorId: self.ruleForm.operatorId,
+          descs: self.ruleForm.descs,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.supplier.addSupplier, params,
+        http.axiosPost(api.purchaseOrder.add, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -317,14 +439,19 @@
         var self = this;
         let params = {
           id: self.$route.query.id,
-          name: self.ruleForm.name,
-          linkman: self.ruleForm.linkman,
-          mobile: self.ruleForm.mobile,
-          address: self.ruleForm.address,
-          desc: self.ruleForm.descs,
+          goodsId: self.ruleForm.goodsId,
+          goodsName: self.ruleForm.goodsName,
+          supplierId: self.ruleForm.supplierId,
+          respId: self.ruleForm.respId,
+          type: self.ruleForm.type,
+          count: self.ruleForm.count,
+          unitPirce: self.ruleForm.unitPirce,
+          totalPrice: self.ruleForm.totalPrice,
+          operatorId: self.ruleForm.operatorId,
+          descs: self.ruleForm.descs,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.supplier.modifySupplier, params,
+        http.axiosPost(api.purchaseOrder.modify, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -338,7 +465,7 @@
             }
           })
       },
-      getSupplierSelect(){
+      getSupplierSelect() {//获取供应商列表
         var self = this
         let params = {
           page: 1,
@@ -355,32 +482,81 @@
             }
           })
       },
-      getSupplierInfo() {//根据id获取采购订单数据
+      getRespoSelect() {//获取仓库列表
+        var self = this
+        let params = {
+          page: 1,
+          limit: 20,
+        }
+        http.axiosGet(api.storage.getStorageListByPage, params,
+          response => {
+            self.loading = false
+            localStorage.removeItem('pageParam')
+            if (response.data.rc === 200) {
+              self.respoArr = response.data.data.list
+            } else {
+              self.controlElAlert('获取数据失败', 'error')
+            }
+          })
+      },
+      getOperatorSelect() {//获取业务员列表
+        var self = this
+        let params = {
+          page: 1,
+          limit: 20,
+        }
+        http.axiosGet(api.employee.getEmployeeListByPage, params,
+          response => {
+            self.loading = false
+            localStorage.removeItem('pageParam')
+            if (response.data.rc === 200) {
+              self.operatorArr = response.data.data.list
+            } else {
+              self.controlElAlert('获取数据失败', 'error')
+            }
+          })
+      },
+      getPurchaseOrderInfo() {//根据id获取采购订单数据
         var self = this;
         var params = {
           id: self.$route.query.id
         }
-        http.axiosGet(api.supplier.getById, params,
+        http.axiosGet(api.purchaseOrder.getById, params,
           response => {
             if (response.data.rc === 200) {
               var resData = response.data.data;
-              self.ruleForm.name = resData.name;
-              self.ruleForm.linkman = resData.code;
-              self.ruleForm.mobile = resData.mobile;
+              self.ruleForm.goodsId = resData.goodsid;
+              self.ruleForm.goodsName = resData.goodsName;
+              self.ruleForm.supplierId = resData.supplierid;
+              self.ruleForm.respId = resData.repoid;
+              self.ruleForm.type = resData.type;
+              self.ruleForm.count = resData.count;
+              self.ruleForm.unitPirce = resData.unitprice;
+              self.ruleForm.totalPrice = resData.totalprice;
+              self.ruleForm.operatorId = resData.employeeid;
               self.ruleForm.descs = resData.descs;
-              self.ruleForm.address = resData.address;
               self.editData = resData;
             } else {
               self.controlElAlert('请求数据失败，刷新重试', 'warning');
             }
           });
       },
+      countChangeTotalPrice(val) {
+        if(/^\+?[1-9][0-9]*$/.test(val)){
+          this.ruleForm.totalPrice = val * this.ruleForm.unitPirce
+        }
+      },
+      unitPriceChangeTotalPrice(val) {
+        if ((/^\d+(\.\d*)?$|^\.\d+$/.test(val))) {
+          this.ruleForm.totalPrice = val * this.ruleForm.count
+        }
+      },
       selectGoods() {//选择商品
         this.dialogImportGoods = true;
         this.formInline2.typeId = '';
         this.getDataDialog();
       },
-       getDataDialog() {//获取导入商品
+      getDataDialog() {//获取导入商品
         var self = this
         let params = {
           page: this.pageIdx2,
@@ -415,7 +591,7 @@
       },
       handleCurrentChange(val) {
         var self = this;
-        if(null!=val){
+        if (null != val) {
           self.ruleForm.goodsId = val.id;
           self.ruleForm.goodsName = val.name;
           self.dialogImportGoods = false;
@@ -463,7 +639,7 @@
   @text-prompt-color: #cccccc;
   @border-color-grey: #E4E4E4;
 
-  .customerAdd {
+  .purchaseOrder {
     header {
       background: @header-bc-color;
       display: flex;

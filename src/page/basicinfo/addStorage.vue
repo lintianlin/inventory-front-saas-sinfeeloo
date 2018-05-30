@@ -49,7 +49,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
+          <el-row class="m-t-20">
             <el-col>
               <el-form-item label="负责人：" prop="admin" >
                 <el-select filterable v-model="ruleForm.admin" placeholder="无" class="selft-select-width" :disabled="isview=='1'" style="display: block">

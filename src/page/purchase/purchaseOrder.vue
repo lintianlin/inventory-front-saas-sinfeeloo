@@ -97,8 +97,11 @@
           <div class="el-table-diy box-content" style="margin-top:0 ">
             <el-row class="box-content-header">
               <el-col :span="24" class="text-r">
-                <el-button type="primary" class="btn-normal self-btn-blue" @click="formAdd()">
-                  添加
+                <el-button type="primary" class="btn-normal self-btn-blue" @click="formBuy()">
+                  采购
+                </el-button>
+                <el-button type="primary" class="btn-normal self-btn-blue" @click="formRefund()">
+                  退货
                 </el-button>
                 <!--<el-button type="primary" class="btn-normal self-btn-green" @click="exportOut()" style="margin-left:0;"-->
                 <!--&gt;导出-->
@@ -390,17 +393,21 @@
             }
           })
       },
-      formAdd() {
+      formBuy() {//添加采购单
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addPurchaseOrder?isview=0'})
+        this.$router.push({path: '/purchase/addPurchaseOrder?isview=0&ordertype=1'})
       },
-      formView(id) {
+      formRefund() {//添加退货单
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=1'})
+        this.$router.push({path: '/purchase/addPurchaseOrder?isview=0&ordertype=2'})
       },
-      formEdit(id) {
+      formView(id) {//查看订单详情
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=0'})
+        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=1&ordertype=1'})
+      },
+      formEdit(id) {//修改
+        this.setParamsLocalStorage()
+        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=0&ordertype=1'})
       },
       formDelete(id) {//删除
         var self = this;

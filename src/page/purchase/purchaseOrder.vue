@@ -401,13 +401,13 @@
         this.setParamsLocalStorage()
         this.$router.push({path: '/purchase/addPurchaseOrder?isview=0&ordertype=2'})
       },
-      formView(id,type) {//查看订单详情
+      formView(id, type) {//查看订单详情
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=1&ordertype='+type})
+        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=1&ordertype=' + type})
       },
-      formEdit(id,type) {//修改
+      formEdit(id, type) {//修改
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=0&ordertype='+type})
+        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=0&ordertype=' + type})
       },
       formDelete(id) {//删除
         var self = this;
@@ -433,16 +433,17 @@
         var self = this;
         let params = {
           id: id,
+          checkState: 4
         }
-        this.showCancelMessage(
+        this.showAuditMessage(
           () => {
             http.axiosPost(api.purchaseOrder.check, params,
               response => {
                 if (response.data.rc === 200) {
-                  self.controlElAlert('删除成功', 'success');
+                  self.controlElAlert('提交审核成功！', 'success');
                   self.getData();
                 } else {
-                  self.controlElAlert('删除失败', 'warning');
+                  self.controlElAlert('提交审核失败！', 'warning');
                 }
               });
           }
@@ -541,6 +542,15 @@
           type: 'warning'
         }).then(callback).catch(() => {
           console.log("删除失败！")
+        });
+      },
+      showAuditMessage(callback) {//确认提交审核提示框
+        this.$confirm('确认提交审核?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(callback).catch(() => {
+          console.log("提交审核失败！")
         });
       },
       controlElAlert(text, type) {//控制提示框

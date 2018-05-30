@@ -433,16 +433,17 @@
         var self = this;
         let params = {
           id: id,
+          checkState: 4
         }
-        this.showCancelMessage(
+        this.showAuditMessage(
           () => {
             http.axiosPost(api.salesOrder.check, params,
               response => {
                 if (response.data.rc === 200) {
-                  self.controlElAlert('删除成功', 'success');
+                  self.controlElAlert('提交审核成功！', 'success');
                   self.getData();
                 } else {
-                  self.controlElAlert('删除失败', 'warning');
+                  self.controlElAlert('提交审核失败！', 'warning');
                 }
               });
           }
@@ -541,6 +542,15 @@
           type: 'warning'
         }).then(callback).catch(() => {
           console.log("删除失败！")
+        });
+      },
+      showAuditMessage(callback) {//确认提交审核提示框
+        this.$confirm('确认提交审核?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(callback).catch(() => {
+          console.log("提交审核失败！")
         });
       },
       controlElAlert(text, type) {//控制提示框

@@ -79,8 +79,9 @@
 
           <el-row>
             <el-col>
-              <el-form-item label="商品单价：" prop="unitPirce" style="width: 410px" >
-                <el-input v-model="ruleForm.unitPirce" @change="unitPriceChangeTotalPrice(ruleForm.unitPirce)" :disabled="isview=='1'"></el-input>
+              <el-form-item label="商品单价：" prop="unitPirce" style="width: 410px">
+                <el-input v-model="ruleForm.unitPirce" @change="unitPriceChangeTotalPrice(ruleForm.unitPirce)"
+                          :disabled="isview=='1'"></el-input>
                 <span class="gray">元</span>
               </el-form-item>
             </el-col>
@@ -384,20 +385,16 @@
       }
     },
     mounted() {
-      if(this.$route.query.isview=='1'){
+      this.getPurchaseOrderInfo()
+      this.getSupplierSelect()
+      this.getRespoSelect()
+      this.getOperatorSelect()
+      if (this.$route.query.id != null) {
         this.getPurchaseOrderInfo()
-      }else{
-        this.getSupplierSelect()
-        this.getRespoSelect()
-        this.getOperatorSelect()
-        if (this.$route.query.id != null) {
-          this.getPurchaseOrderInfo()
-          this.addEdit = '编辑';
-        } else {
-          this.addEdit = '添加';
-        }
+        this.addEdit = '编辑';
+      } else {
+        this.addEdit = '添加';
       }
-
     },
     methods: {
       submitForm(formName) {
@@ -549,7 +546,7 @@
           });
       },
       countChangeTotalPrice(val) {
-        if(/^\+?[1-9][0-9]*$/.test(val)){
+        if (/^\+?[1-9][0-9]*$/.test(val)) {
           this.ruleForm.totalPrice = val * this.ruleForm.unitPirce
         }
       },

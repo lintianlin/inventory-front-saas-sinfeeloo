@@ -27,7 +27,7 @@
                       <el-select v-model="formInline.type" placeholder="全部"
                                  class="selft-select-width" size="small" style="display: block" @change="getData()">
                         <el-option value="全部" label="全部"></el-option>
-                        <el-option value="1" label="进货单"></el-option>
+                        <el-option value="1" label="销售单"></el-option>
                         <el-option value="2" label="退货单"></el-option>
                       </el-select>
                     </el-form-item>

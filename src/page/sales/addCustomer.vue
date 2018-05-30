@@ -4,8 +4,8 @@
       <div class="header-content">
         <div class="pageTitle">
           <i class="bg-theme"></i>
-          <span v-if="isview=='0'">{{addEdit}}供应商</span>
-          <span v-if="isview=='1'">供应商详情</span>
+          <span v-if="isview=='0'">{{addEdit}}客户</span>
+          <span v-if="isview=='1'">客户详情</span>
         </div>
         <div class="refresh">
           <el-button @click.native="goBack()" class="btn-border"><i class="el-icon-arrow-left"></i> 返回</el-button>
@@ -18,7 +18,7 @@
                  class="demo-ruleForm cover-form-style">
           <el-row>
             <el-col>
-              <el-form-item label="供应商名称：" prop="name">
+              <el-form-item label="客户名称：" prop="name">
                 <el-input v-model="ruleForm.name" :readonly="isview=='1'"></el-input>
               </el-form-item>
             </el-col>
@@ -107,7 +107,7 @@
       var checkName = (rule, value, callback) => {
         var self = this;
         if (!value) {
-          return callback(new Error('供应商名称不能为空'));
+          return callback(new Error('客户名称不能为空'));
         }
         if (!(/^[\u4E00-\u9FA5A-Za-z0-9_]{2,50}$/.test(value))) {
           callback(new Error('请输入2~50个字符，可以是汉字、字母、数字和下划线'));
@@ -177,7 +177,7 @@
       script.src = 'http://webapi.amap.com/maps?v=1.4.0&key=3ae9a5dc95e990f4a3508b56639cfab4&plugin=AMap.MouseTool,AMap.PolyEditor,AMap.DistrictSearch,AMap.MarkerClusterer,AMap.Autocomplete,AMap.PlaceSearch'   // 高德地图
       document.body.appendChild(script)
       if (this.$route.query.id != null) {
-        this.getSupplierInfo();
+        this.getCustomerInfo();
         this.addEdit = '编辑';
       } else {
         this.addEdit = '添加';
@@ -224,10 +224,10 @@
           linkman: self.ruleForm.linkman,
           mobile: self.ruleForm.mobile,
           address: self.ruleForm.address,
-          desc: self.ruleForm.descs,
+          descs: self.ruleForm.descs,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.supplier.addSupplier, params,
+        http.axiosPost(api.customer.add, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -245,10 +245,10 @@
           linkman: self.ruleForm.linkman,
           mobile: self.ruleForm.mobile,
           address: self.ruleForm.address,
-          desc: self.ruleForm.descs,
+          descs: self.ruleForm.descs,
         }
         params = tools.fifterNull(params);
-        http.axiosPost(api.supplier.modifySupplier, params,
+        http.axiosPost(api.customer.modify, params,
           response => {
             if (response.data.rc === 200) {
               self.controlElAlert('操作成功', 'success');
@@ -262,12 +262,12 @@
             }
           })
       },
-      getSupplierInfo() {//根据id获取供应商数据
+      getCustomerInfo() {//根据id获取客户数据
         var self = this;
         var params = {
           id: self.$route.query.id
         }
-        http.axiosGet(api.supplier.getById, params,
+        http.axiosGet(api.customer.getById, params,
           response => {
             if (response.data.rc === 200) {
               var resData = response.data.data;

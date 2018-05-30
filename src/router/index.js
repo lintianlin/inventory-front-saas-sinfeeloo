@@ -82,6 +82,11 @@ var routes = [
         component: resolve => require(['@/page/sales/customer'], resolve)
       }, // 客户管理
       {
+        path: '/sales/addCustomer',
+        meta: {requireAuth: true, showCopyRight: true},
+        component: resolve => require(['@/page/sales/addCustomer'], resolve)
+      }, // 添加客户
+      {
         path: '/sales/salesOrder',
         meta: {requireAuth: true, showCopyRight: true},
         component: resolve => require(['@/page/sales/salesOrder'], resolve)

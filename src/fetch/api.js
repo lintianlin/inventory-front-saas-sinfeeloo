@@ -45,21 +45,28 @@ export default {
     deleteEmployee: 'employee/deleteEmployee',
     getEmployeeDetail: 'employee/getEmployeeDetail',
   },
-  supplier:{//供应商管理
-    addSupplier:'supplier/addSupplier',
-    getSupplierListByPage:'supplier/getSupplierListByPage',
-    modifySupplier:'supplier/modifySupplier',
-    deleteSupplier:'supplier/deleteSupplier',
-    getById:'supplier/getById'
+  supplier: {//供应商管理
+    addSupplier: 'supplier/addSupplier',
+    getSupplierListByPage: 'supplier/getSupplierListByPage',
+    modifySupplier: 'supplier/modifySupplier',
+    deleteSupplier: 'supplier/deleteSupplier',
+    getById: 'supplier/getById'
   },
-  purchaseOrder:{
-    add:'purchaseOrder/add',
-    getOrderListByPage:'purchaseOrder/getOrderListByPage',
-    modify:'purchaseOrder/modify',
-    delete:'purchaseOrder/delete',
-    getById:'purchaseOrder/getById',
-    getCheckOrderListByPage:'purchaseOrder/getCheckOrderListByPage',
-    check:'purchaseOrder/check',
+  purchaseOrder: {
+    add: 'purchaseOrder/add',
+    getOrderListByPage: 'purchaseOrder/getOrderListByPage',
+    modify: 'purchaseOrder/modify',
+    delete: 'purchaseOrder/delete',
+    getById: 'purchaseOrder/getById',
+    getCheckOrderListByPage: 'purchaseOrder/getCheckOrderListByPage',
+    check: 'purchaseOrder/check',
+  },
+  customer: {
+    add: 'customer/add',
+    getCustomerListByPage: 'customer/getCustomerListByPage',
+    modify: 'customer/modify',
+    delete: 'customer/delete',
+    getById: 'customer/getById',
   },
   menu: {// 菜单管理
     getPermissionWithMenuList: '/menu/getMenuList'// 获取用户权限对应的菜单列表

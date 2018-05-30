@@ -214,15 +214,15 @@
       },
       formAdd() {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addCustomer?isview=0'})
+        this.$router.push({path: '/sales/addCustomer?isview=0'})
       },
       formView(id) {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addCustomer?id=' + id + '&isview=1'})
+        this.$router.push({path: '/sales/addCustomer?id=' + id + '&isview=1'})
       },
       formEdit(id) {
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addCustomer?id=' + id + '&isview=0'})
+        this.$router.push({path: '/sales/addCustomer?id=' + id + '&isview=0'})
       },
       formDelete(id) {//删除
         var self = this;

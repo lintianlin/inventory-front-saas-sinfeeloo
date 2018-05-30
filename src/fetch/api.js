@@ -77,6 +77,13 @@ export default {
     check:'salesOrder/check',
     getCheckOrderListByPage:'salesOrder/getCheckOrderListByPage',
   },
+  stock:{
+    getStockListByPage:'stock/getStockListByPage',
+    checkPurcharOrder:'stock/checkPurcharOrder',
+    checkSalesOrder:'stock/checkSalesOrder',
+    modifyPrice:'stock/modifyPrice',
+    allot:'stock/allot',
+  },
   menu: {// 菜单管理
     getPermissionWithMenuList: '/menu/getMenuList'// 获取用户权限对应的菜单列表
   },

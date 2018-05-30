@@ -255,12 +255,12 @@
                     <el-button
                       type="text"
                       class="text-theme"
-                      @click="formEdit(scope.row.id)">编辑
+                      @click="formEdit(scope.row.id,scope.row.type)">编辑
                     </el-button>
                     <el-button
                       type="text"
                       class="text-theme"
-                      @click="formView(scope.row.id)">查看
+                      @click="formView(scope.row.id,scope.row.type)">查看
                     </el-button>
                     <el-button
                       type="text"
@@ -401,13 +401,13 @@
         this.setParamsLocalStorage()
         this.$router.push({path: '/purchase/addPurchaseOrder?isview=0&ordertype=2'})
       },
-      formView(id) {//查看订单详情
+      formView(id,type) {//查看订单详情
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=1&ordertype=1'})
+        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=1&ordertype='+type})
       },
-      formEdit(id) {//修改
+      formEdit(id,type) {//修改
         this.setParamsLocalStorage()
-        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=0&ordertype=1'})
+        this.$router.push({path: '/purchase/addPurchaseOrder?id=' + id + '&isview=0&ordertype='+type})
       },
       formDelete(id) {//删除
         var self = this;

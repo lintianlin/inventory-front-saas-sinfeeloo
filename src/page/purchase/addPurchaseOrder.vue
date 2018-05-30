@@ -20,11 +20,12 @@
                  class="demo-ruleForm cover-form-style">
           <el-row>
             <el-col>
-              <el-form-item label="采购商品名称：" prop="goodsName">
+              <el-form-item label="商品名称：" prop="goodsName">
                 <el-input
-                  placeholder="请选择采购商品"
+                  placeholder="请选择商品"
                   suffix-icon="el-icon-search"
                   readonly
+                  :disabled="isview=='1'"
                   @focus="selectGoods"
                   v-model="ruleForm.goodsName">
                 </el-input>
@@ -70,6 +71,7 @@
             <el-col>
               <el-form-item label="数量：" prop="count">
                 <el-input v-model="ruleForm.count" :maxlength="6" @change="countChangeTotalPrice(ruleForm.count)"
+                          :disabled="isview=='1'"
                           placeholder="请输入整数"></el-input>
               </el-form-item>
             </el-col>
@@ -78,7 +80,7 @@
           <el-row>
             <el-col>
               <el-form-item label="商品单价：" prop="unitPirce" style="width: 410px" >
-                <el-input v-model="ruleForm.unitPirce" @change="unitPriceChangeTotalPrice(ruleForm.unitPirce)"></el-input>
+                <el-input v-model="ruleForm.unitPirce" @change="unitPriceChangeTotalPrice(ruleForm.unitPirce)" :disabled="isview=='1'"></el-input>
                 <span class="gray">元</span>
               </el-form-item>
             </el-col>
@@ -87,7 +89,7 @@
           <el-row>
             <el-col>
               <el-form-item label="商品总价：" prop="totalPrice" style="width: 410px">
-                <el-input v-model="ruleForm.totalPrice"></el-input>
+                <el-input v-model="ruleForm.totalPrice" :disabled="isview=='1'"></el-input>
                 <span class="gray">元</span>
               </el-form-item>
             </el-col>

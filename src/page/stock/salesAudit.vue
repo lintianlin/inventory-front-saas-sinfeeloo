@@ -256,6 +256,27 @@
           </div>
         </div>
       </section>
+
+      <el-dialog title="审核订单" :visible.sync="dialogFormVisible" size="tiny" class="auditDialog">
+        <el-form :model="formInDialog" label-width="100px">
+
+          <el-form-item label="是否通过">
+            <el-select v-model="formInDialog.checkState" placeholder="请选择审核结果">
+              <el-option label="通过" value="3"></el-option>
+              <el-option label="未通过" value="2"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="审核结果">
+            <el-input v-model="formInDialog.checkResult"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="auditOrder()">确 定</el-button>
+        </div>
+      </el-dialog>
+
     </div>
   </div>
 </template>
@@ -278,7 +299,7 @@
         pageIdx2: 1, // 当前页
         pageSize2: 20,
         totalPage2: 0, // 总条数
-
+        auditId: '',//审核id
         formInline: {
           type: '',
           orderNumber: '',
@@ -289,6 +310,10 @@
           startTime: '',
           endTime: '',
         },
+        formInDialog: {
+          checkState: '',
+          checkResult: '',
+        },
         respoArr: [],//仓库列表
         elAlertShow: false, // 提示框是否可显示
         elAlertTitle: 'fqwefq', // 提示框文字
@@ -297,6 +322,7 @@
         hasClick: false, // 重复提交增加点击校验标记
         dialogVisible: false, // 高级检索显示框
         dialogVisible2: false, // 表头设置
+        dialogFormVisible: false,
         rules: {},
         sels: [],
         status: '',
@@ -354,23 +380,29 @@
       },
       formAudit(id) {//审核
         var self = this;
+        self.dialogFormVisible = true
+        self.auditId = id
+      },
+      auditOrder() {//审核订单
+        var self = this;
         let params = {
-          id: id,
-          checkState: 4
+          id: self.auditId,
+          checkState: self.formInDialog.checkState,
+          checkResult: self.formInDialog.checkResult
         }
-        this.showAuditMessage(
-          () => {
-            http.axiosPost(api.salesOrder.check, params,
-              response => {
-                if (response.data.rc === 200) {
-                  self.controlElAlert('提交审核成功！', 'success');
-                  self.getData();
-                } else {
-                  self.controlElAlert('提交审核失败！', 'warning');
-                }
-              });
-          }
-        )
+        http.axiosPost(api.stock.checkSalesOrder, params,
+          response => {
+            if (response.data.rc === 200) {
+              self.controlElAlert('审核成功', 'success');
+              self.formInDialog.checkState = '';
+              self.formInDialog.checkResult='';
+              self.getData();
+              self.dialogFormVisible = false
+            } else {
+              self.controlElAlert('审核失败', 'warning');
+            }
+
+          });
 
       },
       setParamsLocalStorage() { // 查询条件存入缓存
@@ -510,6 +542,27 @@
   .el-dialog--large {
     .box-content .el-table th {
       background: #E4EFFF;
+    }
+  }
+
+  .auditDialog {
+    width: 1500px;
+    margin: 0 auto;
+    .el-select {
+      float: left;
+      width: 500px;
+    }
+    .el-input {
+      float: left;
+      width: 500px;
+    }
+    .el-form-item__error {
+      width: auto;
+      min-width: 100px;
+      max-width: 200px;
+    }
+    .el-form-item {
+      margin-bottom: 52px;
     }
   }
 

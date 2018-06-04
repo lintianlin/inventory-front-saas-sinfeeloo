@@ -150,6 +150,13 @@
           </div>
         </div>
       </section>
+      <el-alert class="topAlert"
+                v-if="elAlertShow"
+                :title="elAlertTitle"
+                :type="elAlertType"
+                :closable="false"
+                show-icon>
+      </el-alert>
     </div>
   </div>
 </template>

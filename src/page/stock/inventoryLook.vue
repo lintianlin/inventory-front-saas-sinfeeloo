@@ -149,15 +149,6 @@
                 </el-table-column>
 
                 <el-table-column
-                  prop="saleprice"
-                  label="预设售价"
-                  min-width="50">
-                  <template slot-scope="scope">
-                    <span class="text-grey"> {{ scope.row.saleprice }}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column
                   prop="totalbuyprice"
                   label="库存总值"
                   min-width="50">
@@ -214,6 +205,56 @@
           </div>
         </div>
       </section>
+      <el-alert class="topAlert"
+                v-if="elAlertShow"
+                :title="elAlertTitle"
+                :type="elAlertType"
+                :closable="false"
+                show-icon>
+      </el-alert>
+      <el-dialog title="价格修改" :visible.sync="changePricedialogFormVisible" size="tiny" class="auditDialog">
+        <el-form :model="changePriceformInDialog" label-width="100px">
+
+          <el-form-item label="平均进价">
+            <el-input v-model="changePriceformInDialog.avgBuyPrice"></el-input>
+          </el-form-item>
+
+          <el-form-item label="销售价格">
+            <el-input v-model="changePriceformInDialog.salePrice"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="changePricedialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="changePriceOrder()">确 定</el-button>
+        </div>
+      </el-dialog>
+
+      <el-dialog title="库存调拨" :visible.sync="allotdialogFormVisible" size="tiny" class="auditDialog">
+        <el-form :model="allotformInDialog" label-width="100px">
+
+          <el-form-item label="调拨数量：">
+            <el-input v-model="allotformInDialog.allotNum"></el-input>
+          </el-form-item>
+
+          <el-form-item label="调拨仓库：">
+            <el-select class="self-select" filterable v-model="allotformInDialog.toStorageId"
+                       placeholder="请选择调拨仓库" size="small"
+                       @change="getData()">
+              <el-option label="全部" value="全部"></el-option>
+              <el-option
+                v-for="item in storageArr"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="allotdialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="allotOrder()">确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -241,6 +282,19 @@
           goodsName: '',
           repoId: '',
         },
+        changePriceformInDialog: {
+          avgBuyPrice: '',
+          salePrice: '',
+        },
+        allotformInDialog: {
+          allotNum: '',
+          toStorageId: '',
+        },
+        changePricedialogFormVisible: false,
+        allotdialogFormVisible: false,
+        changePriceId: '',
+        allotId: '',
+        storageArr: [],
         elAlertShow: false, // 提示框是否可显示
         elAlertTitle: 'fqwefq', // 提示框文字
         elAlertType: 'success', // 提示框类型
@@ -295,13 +349,61 @@
             }
           })
       },
-      formChangePrice() {//改价
-        this.setParamsLocalStorage()
-        this.$router.push({path: '/basicinfo/addStorage?isview=0'})
+      formChangePrice(id) {//改价
+        var self = this;
+        self.changePricedialogFormVisible = true
+        self.changePriceId = id
+      },
+      changePriceOrder() {//修改价格
+        var self = this;
+        let params = {
+          id: self.changePriceId,
+          avgBuyPrice: self.changePriceformInDialog.avgBuyPrice,
+          salePrice: self.changePriceformInDialog.salePrice
+        }
+        http.axiosPost(api.stock.modifyPrice, params,
+          response => {
+            if (response.data.rc === 200) {
+              self.controlElAlert('改价成功', 'success');
+              self.changePriceformInDialog.avgBuyPrice = '';
+              self.changePriceformInDialog.salePrice = '';
+              self.getData();
+              self.changePricedialogFormVisible = false
+            } else {
+              self.changePricedialogFormVisible = false
+              self.controlElAlert(response.data.des, 'warning');
+            }
+
+          });
+
       },
       formAllot(id) {//调拨
-        this.setParamsLocalStorage()
-        this.$router.push({path: '/basicinfo/addStorage?storageid=' + id + '&isview=1'})
+        var self = this;
+        self.allotdialogFormVisible = true
+        self.allotId = id
+      },
+      allotOrder() {//调拨
+        var self = this;
+        let params = {
+          id: self.changePriceId,
+          avgBuyPrice: self.changePriceformInDialog.avgBuyPrice,
+          salePrice: self.changePriceformInDialog.salePrice
+        }
+        http.axiosPost(api.stock.allot, params,
+          response => {
+            if (response.data.rc === 200) {
+              self.controlElAlert('调拨成功', 'success');
+              self.changePriceformInDialog.avgBuyPrice = '';
+              self.changePriceformInDialog.salePrice = '';
+              self.getData();
+              self.changePricedialogFormVisible = false
+            } else {
+              self.changePricedialogFormVisible = false
+              self.controlElAlert(response.data.des, 'warning');
+            }
+
+          });
+
       },
       formDelete(id) {//删除
         var self = this;

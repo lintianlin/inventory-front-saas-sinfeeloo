@@ -256,7 +256,13 @@
           </div>
         </div>
       </section>
-
+      <el-alert class="topAlert"
+                v-if="elAlertShow"
+                :title="elAlertTitle"
+                :type="elAlertType"
+                :closable="false"
+                show-icon>
+      </el-alert>
       <el-dialog title="审核订单" :visible.sync="dialogFormVisible" size="tiny" class="auditDialog">
         <el-form :model="formInDialog" label-width="100px">
 
@@ -314,6 +320,7 @@
           checkState: '',
           checkResult: '',
         },
+
         respoArr: [],//仓库列表
         elAlertShow: false, // 提示框是否可显示
         elAlertTitle: 'fqwefq', // 提示框文字
@@ -323,6 +330,7 @@
         dialogVisible: false, // 高级检索显示框
         dialogVisible2: false, // 表头设置
         dialogFormVisible: false,
+
         rules: {},
         sels: [],
         status: '',
@@ -399,7 +407,8 @@
               self.getData();
               self.dialogFormVisible = false
             } else {
-              self.controlElAlert('审核失败', 'warning');
+              self.dialogFormVisible = false
+              self.controlElAlert(response.data.des, 'warning');
             }
 
           });
